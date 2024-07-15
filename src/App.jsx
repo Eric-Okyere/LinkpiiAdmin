@@ -1,0 +1,78 @@
+import { Route, Routes } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import AllCars from './components/AllCars';
+import AllUsers from './components/AllUsers';
+import AllProducts from './components/AllProducts';
+import ApprovedProducts from './screens/ApprovedProducts';
+import ApprovedCars from './screens/ApprovedCars';
+import Advert from './screens/Advert';
+import PostAdvert from './screens/PostAdvert';
+import Airtel from './components/codes/Airtel';
+import AirtelCode from './screens/AirtelCode';
+import MTN from './components/codes/MTN';
+import MTNPost from './screens/MTNPost';
+import Vodafone from './components/codes/Vodafone';
+import VodafonePost from './screens/VodafonePost';
+import Emergency from './components/codes/Emergency';
+import EmergencyPost from './screens/EmergencyPost';
+import Fashion from './components/Fashion';
+import ApprovedFashion from './screens/AprrovedFashion';
+import AllMechanics from './components/AllMechanics';
+import Call from './screens/Call';
+import Services from './screens/Services';
+import ApprovedServices from './screens/ApprovedServices';
+import Okada from './components/codes/Okada';
+import SpareParts from './screens/SpareParts';
+import Shops from './screens/Shops';
+import Whatsapp from './screens/Whatsapp';
+import Buildings from './screens/Buildings';
+import RentCars from './screens/RentCars';
+import Equipment from './components/codes/Equipment';
+import Reports from './components/Reports';
+import About from './screens/About';
+
+
+
+function App() {
+ 
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route  path="/" element={<AllProducts  />} />
+        <Route path="/approved" element={<ApprovedProducts  />} />
+        <Route path="/fashion" element={<Fashion />} />
+        <Route path="/approvedfashion" element={<ApprovedFashion />} />
+        <Route path="/cars" element={<AllCars />} />
+        <Route path="/users" element={<AllUsers />} />
+        <Route path="/approvedcars" element={<ApprovedCars />} />
+        <Route path="/advert" element={<Advert />} />
+        <Route path="/postadvert" element={<PostAdvert />} />
+        <Route path="/airtel" element={<Airtel />} />
+        <Route path="/airtelcode" element={<AirtelCode />} />
+        <Route path="/mtn" element={<MTN />} />
+        <Route path="/mtnpost" element={<MTNPost />} />
+        <Route path="/vodafone" element={<Vodafone />} />
+        <Route path="/vodafonepost" element={<VodafonePost />} />
+        <Route path="/emergency" element={<Emergency />} />
+        <Route path="/emergencypost" element={<EmergencyPost />} />
+        <Route path="/mechanics" element={<AllMechanics />} />
+        <Route path="/calls" element={<Call />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/servicesapproved" element={<ApprovedServices />} />
+        <Route path="/okada" element={<Okada />} />
+        <Route path="/spare" element={<SpareParts />} />
+        <Route path="/shop" element={<Shops />} />
+        <Route path="/whatsap" element={<Whatsapp />} />
+        <Route path="/building" element={<Buildings />} />
+        <Route path="/carrent" element={<RentCars />} />
+        <Route path="/quip" element={<Equipment />} />
+        <Route path="/report" element={<Reports />} />
+        
+        
+      </Routes>
+    </>
+  );
+}
+
+export default App;
