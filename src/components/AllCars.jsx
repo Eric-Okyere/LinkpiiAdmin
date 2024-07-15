@@ -62,6 +62,7 @@ const AllCars = () => {
       axios.delete(`${baseURL}cars/${id}`)
         .then((res) => {
           const products = productFilter.filter((item) => item._id !== id);
+          setProductCount(productCount - 1);
           setProductFilter(products);
         })
         .catch((error) => console.log(error));

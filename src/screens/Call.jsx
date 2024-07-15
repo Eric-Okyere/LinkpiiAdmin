@@ -69,6 +69,7 @@ console.log(currentTimeFormatted);
     )
       .then((res) => {
         const products = productFilter.filter((item) => item._id !== deleteId);
+        setProductCount(productCount - 1);
         setProductFilter(products);
         setShowConfirmation(false);
       })

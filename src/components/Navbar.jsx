@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../assets/screen.png';
-import Sidebar from './Sidebar'; 
+import Sidebar from './Sidebar';
 import { FaAngleDown } from "react-icons/fa6";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isServicesOpen, setIsServicesOpen] = useState(false); 
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [carDrop, setcarDrop] = useState(false);
   const location = useLocation();
 
@@ -93,9 +93,8 @@ const Navbar = () => {
           </li>
           {/* End Services dropdown */}
 
-{/* All Cars */}
-
-<li
+          {/* All Cars */}
+          <li
             className={`text-black font-bold font-uniquifier hover:text-black relative ${location.pathname.startsWith('/services') ? 'bg-green-300' : ''}`}
             onClick={toggleCarsDropdown}
           >
@@ -118,15 +117,9 @@ const Navbar = () => {
                 <li className="px-4 py-2">
                 <Link to="/mechanics">All Mechanics</Link>
                 </li>
-                {/* <li className="px-4 py-2">
-                  <Link to="/building">Buildings</Link>
-                </li> */}
               </ul>
             )}
           </li>
-
-
-
 
           <li className={`text-black hover:text-blue-200 font-bold font-uniquifier ${location.pathname === '/' ? 'bg-green-300' : ''}`}>
             <Link to="/">All Agric</Link>
@@ -134,12 +127,9 @@ const Navbar = () => {
           <li className={`text-black font-bold font-uniquifier hover:text-blue-200  ${location.pathname === '/approved' ? 'bg-green-300' : ''}`}>
             <Link to="/approved">Approved Agric</Link>
           </li>
-        
-         
           <li className={`text-black hover:text-blue-200 font-bold font-uniquifier ${location.pathname === '/spare' ? 'bg-green-300' : ''}`}>
             <Link to="/spare">Spare Parts</Link>
           </li>
-         
           <li className={`text-black hover:text-blue-200 font-bold font-uniquifier ${location.pathname === '/postadvert' ? 'bg-green-300' : ''}`}>
             <Link to="/postadvert">Post Advert</Link>
           </li>
@@ -153,7 +143,6 @@ const Navbar = () => {
 
         {/* Render the Sidebar component */}
         <Sidebar isOpen={isOpen} location={location} />
-        
         {/* End Sidebar */}
       </div>
     </nav>

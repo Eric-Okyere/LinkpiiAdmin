@@ -63,6 +63,7 @@ const Equipment = () => {
       .then((res) => {
         // Filter out the deleted item from the product list
         const updatedProducts = productFilter.filter((item) => item.id !== deleteId);
+        setProductCount(productCount - 1);
         setProductFilter(updatedProducts);
         // Reset the deleteId state after deletion
         setDeleteId(null);

@@ -68,6 +68,7 @@ const AllMechanics = () => {
     )
       .then((res) => {
         const products = productFilter.filter((item) => item.id !== deleteId);
+        setProductCount(productCount - 1);
         setProductFilter(products);
         // Hide delete confirmation popup after deletion
         setShowDeleteConfirmation(false);

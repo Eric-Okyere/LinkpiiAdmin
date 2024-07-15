@@ -73,6 +73,7 @@ const Advert = () => {
     axios.delete(`${baseURL}advert/${deleteId}`)
       .then((res) => {
         const updatedImages = advertImages.filter((image) => image._id !== deleteId);
+        setProductCount(productCount - 1);
         setAdvertImages(updatedImages);
         // Hide delete confirmation popup after deletion
         setShowDeleteConfirmation(false);
