@@ -127,6 +127,8 @@ const Fashion = () => {
                 {item.name}
               </h5>
               <h3 className={myStyle}> View:{item.views}</h3>
+              <h3 className={myStyle}> Cate:{item.category.name}</h3>
+              <h3 className={myStyle}> Condi:{item?.condition}</h3>
               <h3 className={myStyle}> Gh₵{item.price}</h3>
               <h3 className={myStyle}>{item.description}</h3>
               <h3 className={myStyle}>{item.region}</h3>

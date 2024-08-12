@@ -169,7 +169,10 @@ const AllUsers = () => {
               <div className="flex items-center justify-center pt-1">
                 <FaUserCircle size={40} className='text-center' />
               </div>
+              <div className='flex'>
               <h3 className={myStyle}>{item.name}</h3>
+              <h3 className={myStyle}>{item?.lastname}</h3>
+              </div>
               <h3 className={myStyle}>{item.email}</h3>
               <h3 className={myStyle}>{item.phone}</h3>
               <h3 className={myStyle}>

@@ -32,8 +32,9 @@ import RentCars from './screens/RentCars';
 import Equipment from './components/codes/Equipment';
 import Reports from './components/Reports';
 import About from './screens/About';
+import NewMechanics from './components/NewMechanics';
 
-const SESSION_DURATION = 30 * 60 * 1000; 
+const SESSION_DURATION = 60 * 60 * 1000; 
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -101,6 +102,7 @@ function App() {
             <Route path="/quip" element={<Equipment />} />
             <Route path="/report" element={<Reports />} />
             <Route path="/about" element={<About />} />
+            <Route path="/mecha" element={<NewMechanics />} />
           </Routes>
         </>
       ) : (

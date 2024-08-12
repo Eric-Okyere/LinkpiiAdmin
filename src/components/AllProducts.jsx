@@ -153,6 +153,7 @@ const confirmBoost = () => {
               <h5 className={`${myStyle}, text-2xl`}>
                 {item.name}
               </h5>
+            
               <h3 className={myStyle}> Gh₵{item.price}</h3>
               <h3 className={myStyle}>{item.description}</h3>
               <h3 className={myStyle}>{item.region}</h3>

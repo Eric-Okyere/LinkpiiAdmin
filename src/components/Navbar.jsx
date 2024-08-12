@@ -115,6 +115,9 @@ const Navbar = () => {
                 <Link to="/okada">All Okada</Link>
                 </li>
                 <li className="px-4 py-2">
+                <Link to="/mecha">New Mechanics</Link>
+                </li>
+                <li className="px-4 py-2">
                 <Link to="/mechanics">All Mechanics</Link>
                 </li>
               </ul>
