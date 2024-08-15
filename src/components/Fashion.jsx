@@ -127,7 +127,9 @@ const Fashion = () => {
                 {item.name}
               </h5>
               <h3 className={myStyle}> View:{item.views}</h3>
-              <h3 className={myStyle}> Cate:{item.category.name}</h3>
+           
+              <h3 className={myStyle}> Cate:{item?.category?.name}</h3>
+
               <h3 className={myStyle}> Condi:{item?.condition}</h3>
               <h3 className={myStyle}> Gh₵{item.price}</h3>
               <h3 className={myStyle}>{item.description}</h3>
@@ -136,6 +138,8 @@ const Fashion = () => {
               <h3 className={myStyle}>Phone:{item.phone}</h3>
               <h3 className={myStyle}>Whatsapp:{item.whatsapp}</h3>
               <h3 className={myStyle}>{item.location}</h3>
+              <h3 className={myStyle}>Author:{item?.author?.name}</h3>
+              <h3 className={myStyle}>Author:{item?.author?.phone}</h3>
               <h3 className={myStyle}>
                 {formatDate(item.dateCreated)}
               </h3>

@@ -58,7 +58,7 @@ const Equipment = () => {
 
   const confirmDelete = () => {
     // Perform the deletion
-    axios.delete(`${baseURL}fashionpost/${deleteId}`)
+    axios.delete(`${baseURL}equipmentmain/${deleteId}`)
       .then((res) => {
         // Filter out the deleted item from the product list
         const updatedProducts = productFilter.filter((item) => item.id !== deleteId);
