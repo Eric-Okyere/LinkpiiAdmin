@@ -33,6 +33,7 @@ import Equipment from './components/codes/Equipment';
 import Reports from './components/Reports';
 import About from './screens/About';
 import NewMechanics from './components/NewMechanics';
+import UserDetail from './components/UserDetail';
 
 const SESSION_DURATION = 60 * 60 * 1000; 
 
@@ -103,6 +104,7 @@ function App() {
             <Route path="/report" element={<Reports />} />
             <Route path="/about" element={<About />} />
             <Route path="/mecha" element={<NewMechanics />} />
+            <Route path="/user-detail/:id" element={<UserDetail />} />
           </Routes>
         </>
       ) : (

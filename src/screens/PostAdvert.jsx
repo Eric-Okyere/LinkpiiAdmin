@@ -8,9 +8,11 @@ const PostAdvert = () => {
 
   const [file, setFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const [isFileSelected, setIsFileSelected] = useState(false); // State to track if a file is selected
-  const [isLoading, setIsLoading] = useState(false); // State to track form submission loading state
+  const [isFileSelected, setIsFileSelected] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false); 
   const [name, setName] = useState()
+
+
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);

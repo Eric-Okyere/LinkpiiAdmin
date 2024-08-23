@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card } from 'flowbite-react';
+import { Link } from 'react-router-dom';  // Import Link from react-router-dom
+import { Card } from 'flowbite-react';
 import { BeatLoader } from 'react-spinners';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
@@ -79,11 +80,11 @@ const AllUsers = () => {
     } else {
       // If search term is provided, filter based on the original data array
       filteredProducts = data.filter((item) => {
-        const itemName = (item.name || '').toLowerCase(); // Handle potential undefined value
+        const itemName = (item.name || '').toLowerCase(); 
         const itemEmail = (item.email || '').toLowerCase(); // Handle potential undefined value
         const itemPhone = (item.phone || '').toLowerCase(); // Handle potential undefined value
         const searchTermLower = searchTerm.toLowerCase();
-  
+
         return (
           itemName.includes(searchTermLower) ||
           itemEmail.includes(searchTermLower) ||
@@ -93,8 +94,8 @@ const AllUsers = () => {
     }
     setProductFilter(filteredProducts);
   };
-  
-  const handleClear=()=> {
+
+  const handleClear = () => {
     setSearchTerm("")
     setProductFilter(data)
   }
@@ -154,8 +155,8 @@ const AllUsers = () => {
           className="p-2 border border-gray-300 rounded-lg w-full"
         />
         <div className='flex justify-between'>
-        <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2 ml-2 rounded-lg">Search</button>
-        <button onClick={handleClear} className="bg-red-500 text-white px-4 py-2 ml-2 rounded-lg">Clear</button>
+          <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2 ml-2 rounded-lg">Search</button>
+          <button onClick={handleClear} className="bg-red-500 text-white px-4 py-2 ml-2 rounded-lg">Clear</button>
         </div>
       </div>
       <div className="flex flex-wrap justify-around ">
@@ -167,42 +168,46 @@ const AllUsers = () => {
           productFilter.map((item) => (
             <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item._id}>
               <div className="flex items-center justify-center pt-1">
-                <FaUserCircle size={40} className='text-center' />
+                {item.avatar?(
+                   <img width={40} height={40} className='rounded-full' src={item.avatar} alt="image 1" />
+                ):(<FaUserCircle size={40} className='text-center' />)}
+                
               </div>
               <div className='flex'>
-              <h3 className={myStyle}>{item.name}</h3>
-              <h3 className={myStyle}>{item?.lastname}</h3>
+                <Link to={`/user-detail/${item._id}`}>
+                  <h3 className={myStyle}>{item.name} {item.lastname}</h3>
+                </Link>
               </div>
               <h3 className={myStyle}>{item.email}</h3>
               <h3 className={myStyle}>{item.phone}</h3>
               <h3 className={myStyle}>
                 {formatDate(item.dateCreated)}
               </h3>
-             
+
               <button
                 onClick={() => handleDelete(item._id)}
                 className="bg-red-500 font-uniquifier m-2 w-full text-white p-2 rounded"
               >
                 Delete
               </button>
-              {!item.report&&(
+              {!item.report && (
                 <button
-                onClick={() => handleReport(item._id)}
-                className="bg-blue-500 font-uniquifier m-2 w-full text-white p-2 rounded"
-              >
-                Report
-              </button>
+                  onClick={() => handleReport(item._id)}
+                  className="bg-blue-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+                >
+                  Report
+                </button>
               )}
-            
-            {item.report&&(
-              <button
-                onClick={() => handleRectify(item._id)}
-                className="bg-green-500 font-uniquifier m-2 w-full text-white p-2 rounded"
-              >
-                Rectify
-              </button>
+
+              {item.report && (
+                <button
+                  onClick={() => handleRectify(item._id)}
+                  className="bg-green-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+                >
+                  Rectify
+                </button>
               )}
-         
+
             </Card>
           ))
         )}

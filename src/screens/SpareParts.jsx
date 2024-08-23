@@ -14,7 +14,7 @@ const SpareParts = () => {
   const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
 
   const apiGet = () => {
-    fetch(`${baseURL}spare`)
+    fetch(`${baseURL}sparepartsmainpost`)
       .then((response) => response.json())
       .then((json) => {
         setData(json);
@@ -29,7 +29,7 @@ const SpareParts = () => {
 
   const fetchProductCount = async () => {
     try {
-      const response = await fetch(`${baseURL}spare/get/count`);
+      const response = await fetch(`${baseURL}sparepartsmainpost/get/count`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -57,7 +57,7 @@ const SpareParts = () => {
 
   const confirmDelete = () => {
     // Perform the deletion
-    axios.delete(`${baseURL}spare/${deleteId}`)
+    axios.delete(`${baseURL}sparepartsmainpost/${deleteId}`)
       .then((res) => {
         // Filter out the deleted item from the product list
         const updatedProducts = productFilter.filter((item) => item.id !== deleteId);
@@ -71,7 +71,7 @@ const SpareParts = () => {
 
   const handleUpdateApproval = async (id) => {
     try {
-      const response = await axios.put(`${baseURL}spare/${id}/approve`);
+      const response = await axios.put(`${baseURL}sparepartsmainpost/${id}/approve`);
       const updatedProduct = response.data;
 
       setProductFilter((prevProducts) => {
