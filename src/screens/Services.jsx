@@ -135,6 +135,8 @@ const Services = () => {
               <h3 className={myStyle}>Phone:{item.phone}</h3>
               <h3 className={myStyle}>Whatsapp:{item.whatsapp}</h3>
               <h3 className={myStyle}>{item.location}</h3>
+              <h3 className={myStyle}>{item.author.name}</h3>
+              <h3 className={myStyle}>{item.author.phone}</h3>
               <h3 className={myStyle}>Views:{item.views}</h3>
               <h3 className={myStyle}>
                 {formatDate(item.dateCreated)}
