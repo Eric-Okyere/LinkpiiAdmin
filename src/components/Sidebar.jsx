@@ -62,6 +62,12 @@ const Sidebar = ({ isOpen, location }) => {
               <li className="px-4 py-2">
               <Link to="/shop">All Shops</Link>
               </li>
+              <li className="px-4 py-2">
+              <Link to="/building">All Buildings</Link>
+              </li>
+              <li className="px-4 py-2">
+              <Link to="/carrent">All Equipments</Link>
+              </li>
             </ul>
           )}
         </li>

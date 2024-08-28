@@ -109,8 +109,8 @@ const confirmApprove = () => {
   return (
     <div>
       <div className='flex justify-between mx-8 pt-16'>
-        <h1 className='font-bold'>ALL PRODUCTS</h1>
-        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Products: {productCount}</h2>
+        <h1 className='font-bold'>ALL MECHANICS</h1>
+        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Mechanics: {productCount}</h2>
       </div>
       <div className="flex flex-wrap justify-around ">
         {loading ? (
