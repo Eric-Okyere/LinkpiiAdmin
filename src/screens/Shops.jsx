@@ -136,6 +136,8 @@ const Shops = () => {
               <h3 className={myStyle}>Whatsapp:{item.whatsapp}</h3>
               <h3 className={myStyle}>{item.location}</h3>
               <h3 className={myStyle}>Views:{item.views}</h3>
+            
+              <h3 className={myStyle}>Author:{item.author.name}</h3>
 
               {item.commentsec.map((contact, index) => (
                 <h3 key={index}>Viewers Contacts:{contact.content}</h3>

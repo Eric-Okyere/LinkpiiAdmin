@@ -50,7 +50,7 @@ const Sidebar = ({ isOpen, location }) => {
           <Link to="/fashion">General</Link>
         </li>
         <li className={`px-4 py-2 text-gray-700 hover:text-black relative ${isServicesOpen ? 'bg-green-300' : ''}`}>
-          <span onClick={toggleServicesDropdown}>Services</span>
+          <span onClick={toggleServicesDropdown}>All</span>
           {isServicesOpen && (
             <ul className="absolute left-0 top-full bg-[#f2f2f2] shadow-lg py-2 rounded-md z-40">
               <li className="px-4 py-2">

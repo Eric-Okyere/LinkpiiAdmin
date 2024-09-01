@@ -141,6 +141,9 @@ const AllCars = () => {
                   <h1 className={myStylesh1}>
                     Views: <span className={Spanstyle}>{item.views}</span>
                   </h1>
+                  <h1 className={myStylesh1}>
+                    Author: <span className={Spanstyle}>{item?.author?.name}</span>
+                  </h1>
                   
                   <h1 className={myStylesh1}>
                     Date: <span className={Spanstyle}>{formatDate(item.dateCreated)}</span>

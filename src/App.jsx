@@ -29,11 +29,12 @@ import Shops from './screens/Shops';
 import Whatsapp from './screens/Whatsapp';
 import Buildings from './screens/Buildings';
 import RentCars from './screens/RentCars';
-import Equipment from './components/codes/Equipment';
+
 import Reports from './components/Reports';
 import About from './screens/About';
 import NewMechanics from './components/NewMechanics';
 import UserDetail from './components/UserDetail';
+import Equipment from './screens/Equipment';
 
 const SESSION_DURATION = 60 * 60 * 1000; 
 

@@ -8,8 +8,9 @@ const Fashion = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productFilter, setProductFilter] = useState([]);
-  const [productCount, setProductCount] = useState(0); // New state for product count
+  const [productCount, setProductCount] = useState(0); // State for product count
   const [deleteId, setDeleteId] = useState(null); // State for tracking delete confirmation
+  const [searchTerm, setSearchTerm] = useState(''); // State for search input
 
   const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
 
@@ -51,18 +52,15 @@ const Fashion = () => {
   };
 
   const handleDelete = (id) => {
-    // Set the id of the item to be deleted
     setDeleteId(id);
   };
 
   const confirmDelete = () => {
-    // Perform the deletion
     axios.delete(`${baseURL}fashionpost/${deleteId}`)
       .then((res) => {
-        // Filter out the deleted item from the product list
         const updatedProducts = productFilter.filter((item) => item.id !== deleteId);
         setProductFilter(updatedProducts);
-        setProductCount(productCount - 1)
+        setProductCount(productCount - 1);
         setDeleteId(null);
       })
       .catch((error) => console.log(error));
@@ -87,6 +85,7 @@ const Fashion = () => {
       console.error('Error updating product approval:', error);
     }
   };
+
   const handleUpdateApproval = async (id) => {
     try {
       const response = await axios.put(`${baseURL}fashionpost/${id}/approve`);
@@ -107,12 +106,44 @@ const Fashion = () => {
     }
   };
 
+  const handleSearch = () => {
+    if (searchTerm === '') {
+      setProductFilter(data);
+    } else {
+      const filteredProducts = data.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setProductFilter(filteredProducts);
+    }
+  };
+
+  const handleClear = () => {
+    setSearchTerm("")
+    setProductFilter(data)
+  }
+
   return (
     <div>
       <div className='flex justify-between mx-8 pt-16'>
         <h1 className='font-bold'>ALL FASHION</h1>
-        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Fashion Products: {productCount}</h2>
+        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Products: {productCount}</h2>
       </div>
+
+      {/* Search Input and Button */}
+      <div className='flex justify-center my-4'>
+      <button onClick={handleClear} className="bg-red-500 text-white px-4 py-2 ml-2 rounded-lg">Clear</button>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search products..."
+          className="p-2 border border-gray-300 rounded-l"
+        />
+        <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded-r">
+          Search
+        </button>
+      </div>
+
       <div className="flex flex-wrap justify-around ">
         {loading ? (
           <div className="flex items-center justify-center w-full h-full">
@@ -127,9 +158,7 @@ const Fashion = () => {
                 {item.name}
               </h5>
               <h3 className={myStyle}> View:{item.views}</h3>
-           
               <h3 className={myStyle}> Cate:{item?.category?.name}</h3>
-
               <h3 className={myStyle}> Condi:{item?.condition}</h3>
               <h3 className={myStyle}> Gh₵{item.price}</h3>
               <h3 className={myStyle}>{item.description}</h3>
