@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';  // Import Link from react-router-dom
 import { Card } from 'flowbite-react';
 import { BeatLoader } from 'react-spinners';
