@@ -146,6 +146,9 @@ console.log(currentTimeFormatted);
               <h3 className={myStyle}>
               {formatDateTime(item.dateCreated)}
                 </h3>
+              <h3 className={myStyle}>
+              {item?.pagename}
+                </h3>
               
               <button
                 onClick={() => handleDelete(item._id)}
