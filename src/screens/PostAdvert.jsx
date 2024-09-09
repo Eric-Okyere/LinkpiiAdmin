@@ -11,6 +11,8 @@ const PostAdvert = () => {
   const [isFileSelected, setIsFileSelected] = useState(false); 
   const [isLoading, setIsLoading] = useState(false); 
   const [name, setName] = useState()
+  const [phone, setPhone] = useState("")
+  const [whatsapp, setWhatsapp] = useState("")
 
 
   const handleFileChange = (event) => {
@@ -30,6 +32,8 @@ const PostAdvert = () => {
       const formData = new FormData();
       formData.append('picture', file);
       formData.append('name', name);
+      formData.append('phone', phone);
+      formData.append('whatsapp', whatsapp);
 
       const response = await axios.post(`${baseURL}advert`, formData, {
         headers: {
@@ -57,7 +61,31 @@ const PostAdvert = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            placeholder='name'
+            placeholder='Enter name'
+          />
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+            placeholder='Enter Phone Number'
+          />
+          <input
+            type="text"
+            value={whatsapp}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              
+              // Check if input contains zero at the beginning or only zero
+              if (inputValue === "0") {
+                return; // Do nothing if input is zero
+              }
+          
+              // If input is valid (not starting with or being zero), update state
+              setWhatsapp(inputValue);
+            }}
+            required
+            placeholder='Enter Whatsapp Number'
           />
 
           <label>
