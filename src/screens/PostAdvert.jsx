@@ -82,17 +82,8 @@ const PostAdvert = () => {
           <input
             type="text"
             value={whatsapp}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              
-              // Check if input contains zero at the beginning or only zero
-              if (inputValue === "0") {
-                return; // Do nothing if input is zero
-              }
-          
-              // If input is valid (not starting with or being zero), update state
-              setWhatsapp(inputValue);
-            }}
+            onChange={(e) => setWhatsapp( e.target.value)
+            }
             required
             placeholder='Enter Whatsapp Number'
           />
