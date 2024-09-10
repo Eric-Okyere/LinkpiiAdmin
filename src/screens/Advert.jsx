@@ -120,6 +120,9 @@ const Advert = () => {
         <img width={250} height={100} src={image.picture} alt="image 1" />
         <div className="flex flex-col justify-center ml-4">
           <h5 className={`${myStyle}, text-2xl`}>{image.name}</h5>
+          <h5 className={`${myStyle}, text-2xl`}>{image?.author}</h5>
+          <h5 className={`${myStyle}, text-2xl`}>{image?.phone}</h5>
+          <h5 className={`${myStyle}, text-2xl`}>{image?.whatsapp}</h5>
           <h3 className={myStyle}>{formatDate(image.dateCreated)}</h3>
         </div>
         <button
