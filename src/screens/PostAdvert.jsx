@@ -13,6 +13,7 @@ const PostAdvert = () => {
   const [name, setName] = useState()
   const [phone, setPhone] = useState("")
   const [whatsapp, setWhatsapp] = useState("")
+  const [author, setAuthor] = useState("")
 
 
   const handleFileChange = (event) => {
@@ -33,6 +34,7 @@ const PostAdvert = () => {
       formData.append('picture', file);
       formData.append('name', name);
       formData.append('phone', phone);
+      formData.append('author', author);
       formData.append('whatsapp', whatsapp);
 
       const response = await axios.post(`${baseURL}advert`, formData, {
@@ -61,7 +63,14 @@ const PostAdvert = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            placeholder='Enter name'
+            placeholder='Enter name of the company'
+          />
+          <input
+            type="text"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            required
+            placeholder='Enter name of the user'
           />
           <input
             type="text"
