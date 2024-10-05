@@ -109,7 +109,7 @@ function App() {
             <Route path="/mecha" element={<NewMechanics />} />
             <Route path="/boostproduct" element={<Boost />} />
             <Route path="/user-detail/:id" element={<UserDetail />} />
-            <Route path="/forgot-password/:id" element={<ForgotPassowrd />} />
+           
           </Routes>
         </>
       ) : (
