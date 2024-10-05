@@ -81,6 +81,16 @@ const Fashion = () => {
       });
 
       console.log('Product approval updated:', updatedProduct);
+
+      const boostedProduct = productFilter.find((product) => product.id === id);
+
+      const postResponse = await axios.post(`${baseURL}boost`, {
+        productname: boostedProduct.name,
+        pagename: "fashion",
+      });
+      alert(boostedProduct.name + ""+ "Boosted Successful")
+  
+      console.log('Boost record created:', postResponse.data);
     } catch (error) {
       console.error('Error updating product approval:', error);
     }
@@ -118,9 +128,9 @@ const Fashion = () => {
   };
 
   const handleClear = () => {
-    setSearchTerm("")
-    setProductFilter(data)
-  }
+    setSearchTerm("");
+    setProductFilter(data);
+  };
 
   return (
     <div>
@@ -131,7 +141,7 @@ const Fashion = () => {
 
       {/* Search Input and Button */}
       <div className='flex justify-center my-4'>
-      <button onClick={handleClear} className="bg-red-500 text-white px-4 py-2 ml-2 rounded-lg">Clear</button>
+        <button onClick={handleClear} className="bg-red-500 text-white px-4 py-2 ml-2 rounded-lg">Clear</button>
         <input
           type="text"
           value={searchTerm}
@@ -153,25 +163,30 @@ const Fashion = () => {
           productFilter.map((item) => (
             <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item.id}>
               <img width={500} height={500} src={item.picture} alt="image 1" />
-              <img width={500} height={500} src={item.picturesec} alt="image 1" />
-              <h5 className={`${myStyle}, text-2xl`}>
-                {item.name}
-              </h5>
-              <h3 className={myStyle}> View:{item.views}</h3>
-              <h3 className={myStyle}> Cate:{item?.category?.name}</h3>
-              <h3 className={myStyle}> Condi:{item?.condition}</h3>
-              <h3 className={myStyle}> Gh₵{item.price}</h3>
+              <img width={500} height={500} src={item.picturesec} alt="image 2" />
+              
+              {/* Conditionally render video if available */}
+              {item.video && (
+                <video width="500" height="500" controls>
+                  <source src={item.video} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+
+              <h5 className={`${myStyle}, text-2xl`}>{item.name}</h5>
+              <h3 className={myStyle}>View: {item.views}</h3>
+              <h3 className={myStyle}>Cate: {item?.category?.name}</h3>
+              <h3 className={myStyle}>Condi: {item?.condition}</h3>
+              <h3 className={myStyle}>Gh₵{item.price}</h3>
               <h3 className={myStyle}>{item.description}</h3>
               <h3 className={myStyle}>{item.region}</h3>
               <h3 className={myStyle}>{item.town}</h3>
-              <h3 className={myStyle}>Phone:{item.phone}</h3>
-              <h3 className={myStyle}>Whatsapp:{item.whatsapp}</h3>
+              <h3 className={myStyle}>Phone: {item.phone}</h3>
+              <h3 className={myStyle}>Whatsapp: {item.whatsapp}</h3>
               <h3 className={myStyle}>{item.location}</h3>
-              <h3 className={myStyle}>Author:{item?.author?.name}</h3>
-              <h3 className={myStyle}>Author:{item?.author?.phone}</h3>
-              <h3 className={myStyle}>
-                {formatDate(item.dateCreated)}
-              </h3>
+              <h3 className={myStyle}>Author: {item?.author?.name}</h3>
+              <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
+              <h3 className={myStyle}>{formatDate(item.dateCreated)}</h3>
 
               <div className="mt-4 space-y-4">
                 <button
@@ -189,14 +204,14 @@ const Fashion = () => {
                     Approve
                   </button>
                 )}
-                {!item.boost && (
+                {/* {!item.boost && ( */}
                   <button
                     onClick={() => handleUpdateBoost(item.id)}
                     className="bg-blue-600 font-uniquifier w-full text-white p-2 rounded"
                   >
                     Boost
                   </button>
-                )}
+                {/* )} */}
               </div>
             </Card>
           ))

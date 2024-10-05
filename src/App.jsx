@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
@@ -35,6 +35,8 @@ import About from './screens/About';
 import NewMechanics from './components/NewMechanics';
 import UserDetail from './components/UserDetail';
 import Equipment from './screens/Equipment';
+import Boost from './components/Boost';
+import ForgotPassowrd from './screens/ForgotPassowrd';
 
 const SESSION_DURATION = 60 * 60 * 1000; 
 
@@ -105,7 +107,9 @@ function App() {
             <Route path="/report" element={<Reports />} />
             <Route path="/about" element={<About />} />
             <Route path="/mecha" element={<NewMechanics />} />
+            <Route path="/boostproduct" element={<Boost />} />
             <Route path="/user-detail/:id" element={<UserDetail />} />
+            <Route path="/forgot-password/:id" element={<ForgotPassowrd />} />
           </Routes>
         </>
       ) : (

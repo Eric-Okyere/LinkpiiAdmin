@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card } from 'flowbite-react';
 import { BeatLoader } from 'react-spinners';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import baseURL from '../assets/baseURL';
 
 const NewMechanics = () => {

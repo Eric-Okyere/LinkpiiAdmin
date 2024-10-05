@@ -9,9 +9,9 @@ const AllProducts = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productFilter, setProductFilter] = useState([]);
-  const [productCount, setProductCount] = useState(0); // New state for product count
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State for delete confirmation
-  const [deleteId, setDeleteId] = useState(null); // State to store the ID of the item to be deleted
+  const [productCount, setProductCount] = useState(0);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); 
+  const [deleteId, setDeleteId] = useState(null); 
   const [showApproveConfirmation, setShowApproveConfirmation] = useState(false);
   const [showBoostConfirmation, setShowBoostConfirmation] = useState(false);
   const [approveId, setApproveId] = useState(null);
@@ -150,6 +150,9 @@ const confirmBoost = () => {
           productFilter.map((item) => (
             <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item.id}>
               <img width={500} height={500} src={item.picture} alt="image 1" />
+              {item.picturesec && (
+                <img width={500} height={500} src={item.picturesec} alt="image 2" />
+              )}
               <h5 className={`${myStyle}, text-2xl`}>
                 {item.name}
               </h5>
@@ -183,14 +186,14 @@ const confirmBoost = () => {
                      Approve
                   </button>
                 )}
-                {!item.boost && (
+                {/* {!item.boost && ( */}
                   <button
                     onClick={() => handleUpdateboost(item.id)}
                     className="bg-blue-500 font-uniquifier w-full text-white p-2 rounded"
                   >
                      Boost
                   </button>
-                )}
+                {/* )} */}
               </div>
             </Card>
           ))

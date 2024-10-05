@@ -104,6 +104,16 @@ const Shops = () => {
       });
 
       console.log('Product approval updated:', updatedProduct);
+
+      
+
+      const boostedProduct = productFilter.find((product) => product.id === id);
+
+      const postResponse = await axios.post(`${baseURL}boost`, {
+        productname: boostedProduct.name,
+        pagename: "Shop",
+      });
+      alert(boostedProduct.name+ "Boosted Successful")
     } catch (error) {
       console.error('Error updating product approval:', error);
     }
@@ -125,6 +135,15 @@ const Shops = () => {
             <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item.id}>
               <img width={500} height={500} src={item.picture} alt="image 1" />
               <img width={500} height={500} src={item.picturesec} alt="image 1" />
+             
+             
+              {item.video && (
+                <video width="500" height="500" controls>
+                  <source src={item.video} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+             
               <h5 className={`${myStyle}, text-2xl`}>
                 {item.name}
               </h5>
@@ -162,14 +181,14 @@ const Shops = () => {
                     Approve
                   </button>
                 )}
-                {!item.boost && (
+                {/* {!item.boost && ( */}
                   <button
                     onClick={() => handleUpdateBoost(item.id)}
                     className="bg-blue-500 font-uniquifier w-full text-white p-2 rounded"
                   >
                     Boost
                   </button>
-                )}
+                {/* )} */}
               </div>
             </Card>
           ))

@@ -120,6 +120,9 @@ const Navbar = () => {
                 <li className="px-4 py-2">
                 <Link to="/mechanics">All Mechanics</Link>
                 </li>
+                <li className="px-4 py-2">
+                <Link to="/approved">Approved Agric</Link>
+                </li>
               </ul>
             )}
           </li>
@@ -128,7 +131,7 @@ const Navbar = () => {
             <Link to="/">All Agric</Link>
           </li>
           <li className={`text-black font-bold font-uniquifier hover:text-blue-200  ${location.pathname === '/approved' ? 'bg-green-300' : ''}`}>
-            <Link to="/approved">Approved Agric</Link>
+            <Link to="/boostproduct">Boosted Products</Link>
           </li>
           <li className={`text-black hover:text-blue-200 font-bold font-uniquifier ${location.pathname === '/spare' ? 'bg-green-300' : ''}`}>
             <Link to="/spare">Spare Parts</Link>

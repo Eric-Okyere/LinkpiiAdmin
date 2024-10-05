@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import BackgroundImage from '../assets/screen.png';
 
 const Login = ({ onLogin }) => {

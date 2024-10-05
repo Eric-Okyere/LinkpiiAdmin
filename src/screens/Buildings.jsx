@@ -157,14 +157,14 @@ const Buildings = () => {
                     Approve
                   </button>
                 )}
-                {!item.boost && (
+                {/* {!item.boost && ( */}
                   <button
                     onClick={() => handleUpdateBoost(item.id)}
                     className="bg-blue-600 font-uniquifier w-full text-white p-2 rounded"
                   >
                     Boost
                   </button>
-                )}
+                {/* )} */}
               </div>
             </Card>
           ))
