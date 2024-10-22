@@ -7,6 +7,7 @@ import { FaAngleDown } from "react-icons/fa6";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
   const [carDrop, setcarDrop] = useState(false);
   const location = useLocation();
 
@@ -16,6 +17,9 @@ const Navbar = () => {
 
   const toggleServicesDropdown = () => {
     setIsServicesOpen(!isServicesOpen);
+  };
+  const toggleReportDropdown = () => {
+    setIsReportOpen(!isReportOpen);
   };
 
   const toggleCarsDropdown = () => {
@@ -51,9 +55,48 @@ const Navbar = () => {
           <li className={`text-black hover:text-black  font-bold font-uniquifier ${location.pathname === '/whatsap' ? 'bg-green-300' : ''}`}>
             <Link to="/whatsap">Whatsapp</Link>
           </li>
-          <li className={`text-black hover:text-black  font-bold font-uniquifier ${location.pathname === '/report' ? 'bg-green-300' : ''}`}>
+
+          {/* <li className={`text-black hover:text-black  font-bold font-uniquifier ${location.pathname === '/report' ? 'bg-green-300' : ''}`}>
             <Link to="/report">Reports</Link>
+          </li> */}
+
+
+          <li
+            className={`text-black font-bold font-uniquifier hover:text-black relative ${location.pathname.startsWith('/report') ? 'bg-green-300' : ''}`}
+            onClick={toggleReportDropdown}
+          >
+            <span className='flex'>Requests
+            <span className='pt-1' >
+            <FaAngleDown  />
+            </span>
+            </span>
+            {isReportOpen && (
+              <ul className="absolute left-0 top-full bg-white shadow-lg py-2 rounded-md">
+                <li className="px-4 py-2">
+                <Link to="/report">Report</Link>
+                </li>
+                <li className="px-4 py-2">
+                  <Link to="/reqt">Reset Password</Link>
+                </li>
+               {/*  <li className="px-4 py-2">
+                  <Link to="/servicesapproved">Approved Services</Link>
+                </li>
+                <li className="px-4 py-2">
+                  <Link to="/shop">All Shops</Link>
+                </li>
+                <li className="px-4 py-2">
+                  <Link to="/building">Buildings</Link>
+                </li>
+                <li className="px-4 py-2">
+                  <Link to="/carrent">Rent Cars</Link>
+                </li>
+                <li className="px-4 py-2">
+                  <Link to="/quip">Equiments</Link>
+                </li> */}
+              </ul>
+            )}
           </li>
+
          
           {/* Services dropdown */}
           <li
@@ -91,6 +134,9 @@ const Navbar = () => {
               </ul>
             )}
           </li>
+
+
+
           {/* End Services dropdown */}
 
           {/* All Cars */}

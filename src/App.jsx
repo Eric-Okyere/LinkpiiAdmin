@@ -37,6 +37,7 @@ import UserDetail from './components/UserDetail';
 import Equipment from './screens/Equipment';
 import Boost from './components/Boost';
 import ForgotPassowrd from './screens/ForgotPassowrd';
+import ForgotPass from './components/ForgotPass';
 
 const SESSION_DURATION = 60 * 60 * 1000; 
 
@@ -107,6 +108,7 @@ function App() {
             <Route path="/report" element={<Reports />} />
             <Route path="/about" element={<About />} />
             <Route path="/mecha" element={<NewMechanics />} />
+            <Route path="/reqt" element={<ForgotPass />} />
             <Route path="/boostproduct" element={<Boost />} />
             <Route path="/user-detail/:id" element={<UserDetail />} />
            
