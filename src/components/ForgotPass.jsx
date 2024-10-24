@@ -16,7 +16,7 @@ const ForgotPass = () => {
 
   // Updated API call
   const apiGet = () => {
-    fetch(`${baseURL}reqts/requests`)
+    fetch(`${baseURL}requests`)
       .then((response) => response.json())
       .then((json) => {
         if (json.success) {
