@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';  // Import Link from react-router-dom
+import { Link, useNavigate } from 'react-router-dom';  // Import Link from react-router-dom
 import { Card } from 'flowbite-react';
 import { BeatLoader } from 'react-spinners';
 import axios from 'axios';
@@ -14,6 +14,7 @@ const AllUsers = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   const myStyle = "font-bold mx-4 text-black font-uniquifier text-lg";
 
@@ -140,6 +141,11 @@ const AllUsers = () => {
     }
   };
 
+
+  const handleEdit = (id) => {
+    navigate(`/user-update/${id}`);
+  };
+
   return (
     <div>
       <div className='flex justify-between mx-8 pt-16'>
@@ -185,11 +191,12 @@ const AllUsers = () => {
               </h3>
 
               <button
-                onClick={() => handleDelete(item._id)}
-                className="bg-red-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+                onClick={() => handleEdit(item._id)}
+                className="bg-black font-uniquifier m-2 w-full text-white p-2 rounded"
               >
-                Delete
+                Edit
               </button>
+              
               {!item.report && (
                 <button
                   onClick={() => handleReport(item._id)}
@@ -207,6 +214,13 @@ const AllUsers = () => {
                   Rectify
                 </button>
               )}
+
+              <button
+                onClick={() => handleDelete(item._id)}
+                className="bg-red-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+              >
+                Delete
+              </button>
 
             </Card>
           ))
