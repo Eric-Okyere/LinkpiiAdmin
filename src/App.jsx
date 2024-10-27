@@ -39,6 +39,7 @@ import Boost from './components/Boost';
 import ForgotPassowrd from './screens/ForgotPassowrd';
 import ForgotPass from './components/ForgotPass';
 import UpdateUser from './components/UpdateUser';
+import AdminEditPass from './components/AdminEditPass';
 
 const SESSION_DURATION = 60 * 60 * 1000; 
 
@@ -113,6 +114,7 @@ function App() {
             <Route path="/boostproduct" element={<Boost />} />
             <Route path="/user-detail/:id" element={<UserDetail />} />
             <Route path="/user-update/:id" element={<UpdateUser />} />
+            <Route path="/user-editpass/:id" element={<AdminEditPass />} />
            
           </Routes>
         </>

@@ -146,6 +146,10 @@ const AllUsers = () => {
     navigate(`/user-update/${id}`);
   };
 
+  const handleUpdateUserpass = (id) => {
+    navigate(`/user-editpass/${id}`);
+  };
+
   return (
     <div>
       <div className='flex justify-between mx-8 pt-16'>
@@ -216,11 +220,18 @@ const AllUsers = () => {
               )}
 
               <button
+                onClick={() => handleUpdateUserpass(item._id)}
+                className="bg-green-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+              >
+                Change Password
+              </button>
+
+              {/* <button
                 onClick={() => handleDelete(item._id)}
                 className="bg-red-500 font-uniquifier m-2 w-full text-white p-2 rounded"
               >
                 Delete
-              </button>
+              </button> */}
 
             </Card>
           ))
