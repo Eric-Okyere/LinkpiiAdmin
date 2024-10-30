@@ -188,7 +188,7 @@ const AllUsers = () => {
                   <h3 className={myStyle}>{item.name} {item.lastname}</h3>
                 </Link>
               </div>
-              <h3 className={myStyle}>{item.email}</h3>
+              <h3 className={`${myStyle} line-clamp-2 break-words`}>{item.email}</h3>
               <h3 className={myStyle}>{item.phone}</h3>
               <h3 className={myStyle}>
                 {formatDate(item.dateCreated)}
