@@ -7,6 +7,7 @@ const Sidebar = ({ isOpen, location }) => {
   const [isCarOpen, setIsCarOpen] = useState(false);
   const [isMechaOpen, setIsMechaOpen] = useState(false);
   const [isCodesOpen, setIsCodesOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const toggleServicesDropdown = () => {
     setIsServicesOpen(!isServicesOpen);
@@ -36,6 +37,11 @@ const Sidebar = ({ isOpen, location }) => {
     setIsAgricOpen(false);
   };
 
+
+  const toggleReportDropdown = () => {
+    setIsReportOpen(!isReportOpen);
+  };
+
   return (
     <div className={`lg:hidden fixed inset-y-0 left-0 w-64 bg-[#f2f2f2] overflow-y-auto z-30 transform transition-transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       {/* Sidebar Content */}
@@ -49,6 +55,37 @@ const Sidebar = ({ isOpen, location }) => {
         <li className={`px-4 py-2 text-gray-700 hover:text-gray-200 ${location.pathname === '/fashion' ? 'bg-green-300' : ''}`}>
           <Link to="/fashion">General</Link>
         </li>
+
+        <li className={`px-4 py-2 text-gray-700 hover:text-black relative ${isReportOpen ? 'bg-green-300' : ''}`}>
+          <span onClick={toggleReportDropdown}>Requests</span>
+          {isReportOpen && (
+            <ul className="absolute left-0 top-full bg-[#f2f2f2] shadow-lg py-2 rounded-md z-40">
+              <li className="px-4 py-2">
+                <Link to="/reqt">Password Requests</Link>
+              </li>
+              <li className="px-4 py-2">
+                <Link to="/report">Report Alert</Link>
+              </li>
+              {/* <li className="px-4 py-2">
+              <Link to="/shop">All Shops</Link>
+              </li>
+              <li className="px-4 py-2">
+              <Link to="/building">All Buildings</Link>
+              </li>
+              <li className="px-4 py-2">
+              <Link to="/quip">All Equipments</Link>
+              </li>
+              <li className="px-4 py-2">
+              <Link to="/carrent">Car Rent</Link>
+              </li>
+
+              <li className="px-4 py-2">
+              <Link to="/boostproduct">Boosted Products</Link>
+              </li> */}
+            </ul>
+          )}
+        </li>
+
         <li className={`px-4 py-2 text-gray-700 hover:text-black relative ${isServicesOpen ? 'bg-green-300' : ''}`}>
           <span onClick={toggleServicesDropdown}>All</span>
           {isServicesOpen && (
@@ -100,6 +137,9 @@ const Sidebar = ({ isOpen, location }) => {
               </li>
               <li className="px-4 py-2">
                 <Link to="/approvedcars">Approved Cars</Link>
+              </li>
+              <li className="px-4 py-2">
+                <Link to="/mecha">Mechanics</Link>
               </li>
             </ul>
           )}
