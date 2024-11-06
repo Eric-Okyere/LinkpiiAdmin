@@ -153,11 +153,17 @@ const AllUsers = () => {
  
   const handleWhatsApp = (phone) => {
     // Remove the first '0' if it exists
-    const formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
+    let formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
+  
+    // Remove any '+' character if it exists at the beginning
+    formattedPhone = formattedPhone.startsWith('+') ? formattedPhone.slice(1) : formattedPhone;
   
     console.log('Formatted Phone:', formattedPhone);
-    // Format the phone number for WhatsApp with the international code (for example, +234 for Nigeria)
-    const internationalPhone = `${formattedPhone}`; // Replace with your country's code
+  
+    // Format the phone number for WhatsApp
+    const internationalPhone = `+233${formattedPhone}`; // No '+' attached
+  
+    console.log('International Phone:', internationalPhone);
   
     // Create the WhatsApp URL
     const whatsappUrl = `https://wa.me/${internationalPhone}`;
@@ -165,6 +171,7 @@ const AllUsers = () => {
     // Open WhatsApp in a new tab
     window.open(whatsappUrl, '_blank');
   };
+  
   
 
 
