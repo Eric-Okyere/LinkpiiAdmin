@@ -151,26 +151,35 @@ const AllUsers = () => {
   };
 
  
+  // const handleWhatsApp = (phone) => {
+  //   // Remove the first '0' if it exists
+  //   let formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
+  
+  //   // Remove any '+' character if it exists at the beginning
+  //   formattedPhone = formattedPhone.startsWith('+') ? formattedPhone.slice(1) : formattedPhone;
+  
+  //   console.log('Formatted Phone:', formattedPhone);
+  
+  //   // Format the phone number for WhatsApp
+  //   const internationalPhone = `${formattedPhone}`; // No '+' attached
+  
+  //   console.log('International Phone:', internationalPhone);
+  // const message = encodeURIComponent("Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture.");
+  //   const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
+  
+  //   // Open WhatsApp in a new tab
+  //   window.open(whatsappUrl, '_blank');
+  // };
+  
   const handleWhatsApp = (phone) => {
-    // Remove the first '0' if it exists
     let formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
-  
-    // Remove any '+' character if it exists at the beginning
     formattedPhone = formattedPhone.startsWith('+') ? formattedPhone.slice(1) : formattedPhone;
-  
-    console.log('Formatted Phone:', formattedPhone);
-  
-    // Format the phone number for WhatsApp
-    const internationalPhone = `${formattedPhone}`; // No '+' attached
-  
-    console.log('International Phone:', internationalPhone);
-  const message = encodeURIComponent("Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture.");
+    const internationalPhone = `${formattedPhone}`;
+    const message = encodeURIComponent("Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture.");
     const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
-  
-    // Open WhatsApp in a new tab
+    console.log(internationalPhone)
     window.open(whatsappUrl, '_blank');
   };
-  
   
 
 
