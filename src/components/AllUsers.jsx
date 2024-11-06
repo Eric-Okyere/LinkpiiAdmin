@@ -150,6 +150,22 @@ const AllUsers = () => {
     navigate(`/user-editpass/${id}`);
   };
 
+  const removeFirstNum = (phone) => {
+    return phone.slice(1); // Remove the first character (index 0) from the phone number
+  };
+
+  const handleWhatsApp = (phone) => {
+    const phoneNumber = removeFirstNum(phone.replace(/\D/g, '')); // Remove non-numeric characters and remove the first digit
+    const message = "Welcome to linkpii"; // Customizable message
+    const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappLink, '_blank'); // Open WhatsApp in a new tab
+  };
+  
+  
+
+
+
   return (
     <div>
       <div className='flex justify-between mx-8 pt-16'>
@@ -195,6 +211,14 @@ const AllUsers = () => {
               </h3>
 
               <button
+              onClick={() => handleWhatsApp(item.phone)}
+                          className="bg-black font-uniquifier m-2 w-full text-white p-2 rounded"
+              >
+                WhatsApp
+              </button>
+
+
+              <button
                 onClick={() => handleEdit(item._id)}
                 className="bg-black font-uniquifier m-2 w-full text-white p-2 rounded"
               >
@@ -226,12 +250,12 @@ const AllUsers = () => {
                 Change Password
               </button>
 
-              {/* <button
+              <button
                 onClick={() => handleDelete(item._id)}
                 className="bg-red-500 font-uniquifier m-2 w-full text-white p-2 rounded"
               >
                 Delete
-              </button> */}
+              </button>
 
             </Card>
           ))
