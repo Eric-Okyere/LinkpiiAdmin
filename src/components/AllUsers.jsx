@@ -150,19 +150,23 @@ const AllUsers = () => {
     navigate(`/user-editpass/${id}`);
   };
 
-  const removeFirstNum = (phone) => {
-    return phone.slice(1); // Remove the first character (index 0) from the phone number
-  };
-
+ 
   const handleWhatsApp = (phone) => {
-    const phoneNumber = removeFirstNum(phone.replace(/\D/g, '')); // Remove non-numeric characters and remove the first digit
-    const message = "Welcome to linkpii"; // Customizable message
-    const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
-    window.open(whatsappLink, '_blank'); // Open WhatsApp in a new tab
+    // Remove the first '0' if it exists
+    const formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
+  
+    console.log('Formatted Phone:', formattedPhone);
+    // Format the phone number for WhatsApp with the international code (for example, +234 for Nigeria)
+    const internationalPhone = `${formattedPhone}`; // Replace with your country's code
+  
+    // Create the WhatsApp URL
+    const whatsappUrl = `https://wa.me/${internationalPhone}`;
+  
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank');
   };
   
-  
+
 
 
 
@@ -212,10 +216,11 @@ const AllUsers = () => {
 
               <button
               onClick={() => handleWhatsApp(item.phone)}
-                          className="bg-black font-uniquifier m-2 w-full text-white p-2 rounded"
-              >
-                WhatsApp
-              </button>
+              className="bg-green-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+            >
+              WhatsApp
+            </button>
+
 
 
               <button
