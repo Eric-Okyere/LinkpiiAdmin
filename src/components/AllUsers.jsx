@@ -161,7 +161,7 @@ const AllUsers = () => {
     console.log('Formatted Phone:', formattedPhone);
   
     // Format the phone number for WhatsApp
-    const internationalPhone = `+233${formattedPhone}`; // No '+' attached
+    const internationalPhone = `${formattedPhone}`; // No '+' attached
   
     console.log('International Phone:', internationalPhone);
   
