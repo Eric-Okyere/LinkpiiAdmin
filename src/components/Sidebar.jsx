@@ -53,7 +53,7 @@ const Sidebar = ({ isOpen, location }) => {
           <Link to="/whatsap">Whatsapp</Link>
         </li>
         <li className={`px-4 py-2 text-gray-700 hover:text-gray-200 ${location.pathname === '/fashion' ? 'bg-green-300' : ''}`}>
-          <Link to="/fashion">General</Link>
+          <Link to="/">General</Link>
         </li>
 
         <li className={`px-4 py-2 text-gray-700 hover:text-black relative ${isReportOpen ? 'bg-green-300' : ''}`}>
@@ -120,7 +120,7 @@ const Sidebar = ({ isOpen, location }) => {
           {isAgricOpen && (
             <ul className="absolute left-0 top-full bg-[#f2f2f2] shadow-lg py-2 rounded-md z-40">
               <li className="px-4 py-2">
-                <Link to="/">All Agric</Link>
+                <Link to="/agric">All Agric</Link>
               </li>
               <li className="px-4 py-2">
                 <Link to="/approved">Approved Agric</Link>

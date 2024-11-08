@@ -257,7 +257,7 @@ const AllUsers = () => {
               {item.report && (
                 <button
                   onClick={() => handleRectify(item._id)}
-                  className="bg-green-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+                  className="bg-red-500 font-uniquifier m-2 w-full text-white p-2 rounded"
                 >
                   Rectify
                 </button>

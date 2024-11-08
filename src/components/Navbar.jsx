@@ -111,7 +111,7 @@ const Navbar = () => {
             {isServicesOpen && (
               <ul className="absolute left-0 top-full bg-white shadow-lg py-2 rounded-md">
                 <li className="px-4 py-2">
-                <Link to="/fashion">General</Link>
+                <Link to="/">General</Link>
                 </li>
                 <li className="px-4 py-2">
                   <Link to="/services">All Services</Link>
@@ -173,8 +173,8 @@ const Navbar = () => {
             )}
           </li>
 
-          <li className={`text-black hover:text-blue-200 font-bold font-uniquifier ${location.pathname === '/' ? 'bg-green-300' : ''}`}>
-            <Link to="/">All Agric</Link>
+          <li className={`text-black hover:text-blue-200 font-bold font-uniquifier ${location.pathname === '/agric' ? 'bg-green-300' : ''}`}>
+            <Link to="/agric">All Agric</Link>
           </li>
           <li className={`text-black font-bold font-uniquifier hover:text-blue-200  ${location.pathname === '/approved' ? 'bg-green-300' : ''}`}>
             <Link to="/boostproduct">Boosted Products</Link>
