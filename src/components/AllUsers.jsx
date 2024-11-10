@@ -175,7 +175,9 @@ const AllUsers = () => {
     let formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
     formattedPhone = formattedPhone.startsWith('+') ? formattedPhone.slice(1) : formattedPhone;
     const internationalPhone = `${formattedPhone}`;
-    const message = encodeURIComponent("Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture.");
+    const message = encodeURIComponent(
+      "Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture."
+    );
     const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
     console.log(internationalPhone)
     window.open(whatsappUrl, '_blank');

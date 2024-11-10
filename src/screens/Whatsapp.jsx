@@ -110,6 +110,27 @@ console.log(currentTimeFormatted);
 
 
 
+  const handleWhatsApp = (phone, item) => {
+    let formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
+    formattedPhone = formattedPhone.startsWith('+') ? formattedPhone.slice(1) : formattedPhone;
+    const internationalPhone = `${formattedPhone}`;
+    
+    const message = encodeURIComponent(
+      `Hello! You whatsapped ${item.recname} on Linkpii. Were you able to reach out to the business?`
+    );
+
+    const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
+    window.open(whatsappUrl, '_blank');  // Opens WhatsApp in a new tab
+};
+
+
+    const handleCall = (phone) => {
+        // Format phone number if needed, like removing spaces or adding country code
+        const formattedPhone = phone ? phone : `+${phone}`;
+        window.open(`tel:${formattedPhone}`, '_self');  // Opens phone dialer
+     console.log(formattedPhone)
+      };
+
   return (
     <div>
       <div className='flex justify-between mx-8 pt-16'>
@@ -150,6 +171,25 @@ console.log(currentTimeFormatted);
               {item?.pagename}
                 </h3>
               
+
+
+             <button
+              onClick={() => handleCall(item.phone)}
+              className="bg-blue-500 font-uniquifier mb-2 w-full text-white p-2 rounded"
+          >
+              Call
+          </button>
+
+
+                <button
+              onClick={() => handleWhatsApp(item.phone, item)}
+              className="bg-green-500 font-uniquifier mb-2 w-full text-white p-2 rounded"
+            >
+              WhatsApp
+            </button>
+
+
+
               <button
                 onClick={() => handleDelete(item._id)}
                 className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"

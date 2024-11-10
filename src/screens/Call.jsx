@@ -108,6 +108,20 @@ console.log(currentTimeFormatted);
   }
 
 
+  const handleWhatsApp = (phone, item) => {
+    let formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
+    formattedPhone = formattedPhone.startsWith('+') ? formattedPhone.slice(1) : formattedPhone;
+    const internationalPhone = `${formattedPhone}`;
+    
+    const message = encodeURIComponent(
+      `Hello! You called ${item.recname} on Linkpii. Were you able to reach out to the business?`
+    );
+
+    const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
+    window.open(whatsappUrl, '_blank');  // Opens WhatsApp in a new tab
+};
+
+
 
   return (
     <div>
@@ -148,6 +162,13 @@ console.log(currentTimeFormatted);
               <h3 className={myStyle}>
               {item?.pagename}
                 </h3>
+
+                <button
+              onClick={() => handleWhatsApp(item.phone, item)}
+              className="bg-green-500 font-uniquifier mb-2 w-full text-white p-2 rounded"
+            >
+              WhatsApp
+            </button>
               
               <button
                 onClick={() => handleDelete(item._id)}
