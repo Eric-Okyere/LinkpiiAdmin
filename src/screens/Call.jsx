@@ -122,6 +122,12 @@ console.log(currentTimeFormatted);
 };
 
 
+const handleCall = (phone) => {
+  // Format phone number if needed, like removing spaces or adding country code
+  const formattedPhone = phone ? phone : `+${phone}`;
+  window.open(`tel:${formattedPhone}`, '_self');  // Opens phone dialer
+console.log(formattedPhone)
+};
 
   return (
     <div>
@@ -162,6 +168,13 @@ console.log(currentTimeFormatted);
               <h3 className={myStyle}>
               {item?.pagename}
                 </h3>
+
+                <button
+              onClick={() => handleCall(item.phone)}
+              className="bg-blue-500 font-uniquifier mb-2 w-full text-white p-2 rounded"
+          >
+              Call
+          </button>
 
                 <button
               onClick={() => handleWhatsApp(item.phone, item)}
