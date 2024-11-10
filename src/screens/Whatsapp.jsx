@@ -124,6 +124,20 @@ console.log(currentTimeFormatted);
 };
 
 
+  const handleWhatsAppBusi = (receiverphone, item) => {
+    let formattedPhone = receiverphone.startsWith('0') ? receiverphone.slice(1) : receiverphone;
+    formattedPhone = formattedPhone.startsWith('+') ? formattedPhone.slice(1) : formattedPhone;
+    const internationalPhone = `${formattedPhone}`;
+    
+    const message = encodeURIComponent(
+      `Hello! You were whatsapped by ${item.name}on Linkpii. Was the client able to reach out to you?`
+    );
+
+    const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
+    window.open(whatsappUrl, '_blank');  // Opens WhatsApp in a new tab
+};
+
+
     const handleCall = (phone) => {
         // Format phone number if needed, like removing spaces or adding country code
         const formattedPhone = phone ? phone : `+${phone}`;
@@ -177,7 +191,7 @@ console.log(currentTimeFormatted);
               onClick={() => handleCall(item.phone)}
               className="bg-blue-500 font-uniquifier mb-2 w-full text-white p-2 rounded"
           >
-              Call
+              Call Client
           </button>
 
 
@@ -185,10 +199,23 @@ console.log(currentTimeFormatted);
               onClick={() => handleWhatsApp(item.phone, item)}
               className="bg-green-500 font-uniquifier mb-2 w-full text-white p-2 rounded"
             >
-              WhatsApp
+              WhatsApp Client
             </button>
 
+            <button
+              onClick={() => handleCall(item.receiverphone)}
+              className="bg-blue-500 font-uniquifier mb-2 w-full text-white p-2 rounded"
+          >
+              Call Business
+          </button>
 
+
+          <button
+              onClick={() => handleWhatsAppBusi(item.receiverphone, item)}
+              className="bg-green-500 font-uniquifier mb-2 w-full text-white p-2 rounded"
+            >
+              WhatsApp Business
+            </button>
 
               <button
                 onClick={() => handleDelete(item._id)}
