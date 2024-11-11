@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
 import baseURL from '../assets/baseURL';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const AllCars = () => {
   const [data, setData] = useState([]);
@@ -141,9 +142,13 @@ const AllCars = () => {
                   <h1 className={myStylesh1}>
                     Views: <span className={Spanstyle}>{item.views}</span>
                   </h1>
+                 
+
+                  <Link to={`/user-detail/${item.author?._id}`}>
                   <h1 className={myStylesh1}>
                     Author: <span className={Spanstyle}>{item?.author?.name}</span>
                   </h1>
+                  </Link>
                   
                   <h1 className={myStylesh1}>
                     Date: <span className={Spanstyle}>{formatDate(item.dateCreated)}</span>

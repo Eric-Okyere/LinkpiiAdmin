@@ -3,6 +3,7 @@ import { Card } from 'flowbite-react';
 import { BeatLoader } from 'react-spinners';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
+import { Link } from 'react-router-dom';
 
 const Shops = () => {
   const [data, setData] = useState([]);
@@ -156,7 +157,9 @@ const Shops = () => {
               <h3 className={myStyle}>{item.location}</h3>
               <h3 className={myStyle}>Views:{item.views}</h3>
             
-              <h3 className={myStyle}>Author:{item.author.name}</h3>
+              <Link to={`/user-detail/${item.author?._id}`}>
+             {item.author? <h3 className={myStyle}>Author:{item.author.name}</h3>:null} 
+             </Link>
 
               <p className="text-lg mb-2 text-red-500 ml-4">
             {item?.author?.verified ? <p className='text-orange-400'>Verified: Yes</p> : <p className='text-red-500'>Verified: No</p>}

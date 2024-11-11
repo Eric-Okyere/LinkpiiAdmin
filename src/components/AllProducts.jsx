@@ -165,7 +165,11 @@ const confirmBoost = () => {
               <h3 className={myStyle}>phone:{item.phone}</h3>
               <h3 className={myStyle}>whatsapp:{item.whatsapp}</h3>
               <h3 className={myStyle}>View:{item.views}</h3>
+
+
+              <Link to={`/user-detail/${item.author?._id}`}>
               <h3 className={myStyle}>Author: {item?.author?.name}</h3>
+              </Link>
               <h3 className={myStyle}>
                 {formatDate(item.dateCreated)}
               </h3>
