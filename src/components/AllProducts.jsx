@@ -170,6 +170,12 @@ const confirmBoost = () => {
               <Link to={`/user-detail/${item.author?._id}`}>
               <h3 className={myStyle}>Author: {item?.author?.name}</h3>
               </Link>
+
+              <p className="text-lg mb-2 text-red-500 ml-4">
+            {item?.author?.verified ? <p className='text-orange-400'>Verified: Yes</p> : <p className='text-red-500'>Verified: No</p>}
+          </p>
+
+          
               <h3 className={myStyle}>
                 {formatDate(item.dateCreated)}
               </h3>
