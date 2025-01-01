@@ -158,7 +158,7 @@ const AllUsers = () => {
     formattedPhone = formattedPhone.startsWith('+') ? formattedPhone.slice(1) : formattedPhone;
     const internationalPhone = `${formattedPhone}`;
     const message = encodeURIComponent(
-      "Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture."
+      "Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture. Can we know what you want to buy, sell or services you provide?"
     );
     const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
     console.log(internationalPhone)
@@ -176,7 +176,7 @@ const AllUsers = () => {
     }
   
     const message = encodeURIComponent(
-      "Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture."
+      "Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. Our main aim is to promote agrictulture. Can we know what you want to buy, sell or services you provide?"
     );
   
     // Open the default SMS app
