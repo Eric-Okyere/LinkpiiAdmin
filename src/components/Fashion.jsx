@@ -19,6 +19,7 @@ const Fashion = () => {
     fetch(`${baseURL}fashionpost`)
       .then((response) => response.json())
       .then((json) => {
+        console.log(json); // Check the structure of the data here
         setData(json);
         setProductFilter(json);
         setLoading(false);
@@ -28,6 +29,7 @@ const Fashion = () => {
         setLoading(false);
       });
   };
+  
 
   const fetchProductCount = async () => {
     try {
@@ -155,89 +157,93 @@ const Fashion = () => {
         </button>
       </div>
 
-      <div className="flex flex-wrap justify-around ">
-        {loading ? (
-          <div className="flex items-center justify-center w-full h-full">
-            <BeatLoader color={'#36D7B7'} loading={loading} />
-          </div>
+      <div className="flex flex-wrap justify-around">
+  {loading ? (
+    <div className="flex items-center justify-center w-full h-full">
+      <BeatLoader color={'#36D7B7'} loading={loading} />
+    </div>
+  ) : (
+    productFilter.map((item) => (
+      <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2] min-h-[500px]" key={item.id}>
+        <img src={item.picture} alt="image 1" className="w-full object-contain" />
+        <img src={item.picturesec} alt="image 2" className="w-full object-contain" />
+
+        {/* Conditionally render video if available */}
+        {item.video ? (
+        <video style={{ width: '100%', height: '300px', marginTop:"20px" }} controls>
+        <source src={item.video} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+     
         ) : (
-          productFilter.map((item) => (
-            <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item.id}>
-              <img width={500} height={500} src={item.picture} alt="image 1" />
-              <img width={500} height={500} src={item.picturesec} alt="image 2" />
-              
-              {/* Conditionally render video if available */}
-              {item.video && (
-                <video width="500" height="500" controls>
-                  <source src={item.video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              )}
-
-              <h5 className={`${myStyle}, text-2xl`}>{item.name}</h5>
-              <h3 className={myStyle}>View: {item.views}</h3>
-              <h3 className={myStyle}>Cate: {item?.category?.name}</h3>
-              <h3 className={myStyle}>Condi: {item?.condition}</h3>
-              <h3 className={myStyle}>Gh₵{item.price}</h3>
-              <h3 className={myStyle}>{item.description}</h3>
-              <h3 className={myStyle}>{item.region}</h3>
-              <h3 className={myStyle}>{item.town}</h3>
-              <h3 className={myStyle}>Phone: {item.phone}</h3>
-              <h3 className={myStyle}>Whatsapp: {item.whatsapp}</h3>
-              <h3 className={myStyle}>{item.location}</h3>
-
-              <Link to={`/user-detail/${item.author?._id}`}>
-             {item.author? <h3 className={myStyle}>Author:{item.author.name}</h3>:null} 
-             </Link>
-              {/* <h3 className={myStyle}>Author: {item?.author?.verify}</h3> */}
-              <p className="text-lg mb-2 text-red-500 ml-4">
-            {item?.author?.verified ? <p className='text-orange-400'>Verified: Yes</p> : <p className='text-red-500'>Verified: No</p>}
-          </p>
-              <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
-              <h3 className={myStyle}>{formatDate(item.dateCreated)}</h3>
-
-              <div className="mt-4 space-y-4">
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-                >
-                  Delete
-                </button>
-
-                {!item.approved && (
-                  <button
-                    onClick={() => handleUpdateApproval(item.id)}
-                    className="bg-green-500 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Approve
-                  </button>
-                )}
-                {/* {!item.boost && ( */}
-                  <button
-                    onClick={() => handleUpdateBoost(item.id)}
-                    className="bg-blue-600 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Boost
-                  </button>
-                {/* )} */}
-              </div>
-            </Card>
-          ))
-        )}
-      </div>
-
-      {/* Delete Confirmation Dialog */}
-      {deleteId && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded shadow-md">
-            <p>Are you sure you want to delete this product?</p>
-            <div className="flex justify-between mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded mr-2">Confirm</button>
-              <button onClick={() => setDeleteId(null)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-            </div>
+          // Placeholder for consistent layout
+          <div className="w-[100%] h-[300px] mt-4 bg-gray-200 flex items-center justify-center text-gray-400">
+            No Video Available
           </div>
+        )}
+
+        <h5 className={`${myStyle} text-2xl`}>{item.name}</h5>
+        <h3 className={myStyle}>View: {item.views}</h3>
+        <h3 className={myStyle}>Cate: {item?.category?.name}</h3>
+        <h3 className={myStyle}>Condi: {item?.condition}</h3>
+        <h3 className={myStyle}>Gh₵{item.price}</h3>
+        <h3 className={myStyle}>{item.discount}%</h3>
+        <h3 className={myStyle}>{item.description}</h3>
+        <h3 className={myStyle}>{item.region}</h3>
+        <h3 className={myStyle}>{item.town}</h3>
+        <h3 className={myStyle}>Phone: {item.phone}</h3>
+        <h3 className={myStyle}>Whatsapp: {item.whatsapp}</h3>
+        <h3 className={myStyle}>{item.location}</h3>
+
+        <Link to={`/user-detail/${item.author?._id}`}>
+          {item.author ? <h3 className={myStyle}>Author: {item.author.name}</h3> : null}
+        </Link>
+        <p className="text-lg mb-2 text-red-500 ml-4">
+          {item?.author?.verified ? (
+            <p className="text-orange-400">Verified: Yes</p>
+          ) : (
+            <p className="text-red-500">Verified: No</p>
+          )}
+        </p>
+        <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
+        <h3 className={myStyle}>{formatDate(item.dateCreated)}</h3>
+
+        <div className="mt-4 space-y-4">
+          <button
+            onClick={() => handleDelete(item.id)}
+            className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
+          >
+            Delete
+          </button>
+
+          {!item.approved && (
+            <button
+              onClick={() => handleUpdateApproval(item.id)}
+              className="bg-green-500 font-uniquifier w-full text-white p-2 rounded"
+            >
+              Approve
+            </button>
+          )}
+          <button
+            onClick={() => handleUpdateBoost(item.id)}
+            className="bg-blue-600 font-uniquifier w-full text-white p-2 rounded"
+          >
+            Boost
+          </button>
+
+          <Link to={`/fashionedit/${item.id}`}>
+  <button className="bg-yellow-500 mt-4 font-uniquifier w-full text-white p-2 rounded">
+    Edit
+  </button>
+</Link>
+
         </div>
-      )}
+      </Card>
+    ))
+  )}
+</div>
+
+
     </div>
   );
 };
