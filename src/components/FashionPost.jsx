@@ -7,9 +7,9 @@ const FashionPost = () => {
   const { id } = useParams(); // Get `id` from the URL to determine edit mode
 
   // State for form fields
-  const [picture, setPicture] = useState(null);
-  const [pictureSec, setPictureSec] = useState(null);
-  const [video, setVideo] = useState(null);
+  const [picture, setPicture] = useState({ file: null, preview: null });
+  const [pictureSec, setPictureSec] = useState({ file: null, preview: null });
+  const [video, setVideo] = useState({ file: null, preview: null });
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [discount, setDiscount] = useState("");
@@ -48,33 +48,44 @@ const FashionPost = () => {
           setRegion(item.region || "");
           setTown(item.town || "");
           setWhatsapp(item.whatsapp || "");
-          setPicture(item.picture || null);
-          setPictureSec(item.picturesec || null);
-          setVideo(item.video || null);
+          if (item.picture) setPicture({ file: null, preview: item.picture });
+          if (item.picturesec) setPictureSec({ file: null, preview: item.picturesec });
+          if (item.video) setVideo({ file: null, preview: item.video });
         })
         .catch((err) => console.error("Error fetching product details:", err));
     }
   }, [id]);
 
   // Handle file upload preview
-  const handleFileChange = (e, setFile) => {
+  const handleFileChange = (e, setFileState) => {
     const file = e.target.files[0];
-    if (file) setFile(URL.createObjectURL(file));
+    if (file) {
+      const previewURL = URL.createObjectURL(file);
+      setFileState({ file, preview: previewURL });
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (picture.preview) URL.revokeObjectURL(picture.preview);
+      if (pictureSec.preview) URL.revokeObjectURL(pictureSec.preview);
+      if (video.preview) URL.revokeObjectURL(video.preview);
+    };
+  }, [picture, pictureSec, video]);
 
   // Handle form submission
   const handleSubmit = async () => {
-    if (!name || !picture || !pictureSec || !price || !category) {
-      setError("Please fill in all required fields.");
-      return;
-    }
-
+    // if (!name || !picture.file || !pictureSec.file || !price || !category) {
+    //   setError("Please fill in all required fields.");
+    //   return;
+    // }
+  
     setIsLoading(true);
-
+  
     const formData = new FormData();
-    formData.append("picture", picture);
-    formData.append("pictureSec", pictureSec);
-    if (video) formData.append("video", video);
+    formData.append("picture", picture.file);
+    formData.append("pictureSec", pictureSec.file);
+    if (video.file) formData.append("video", video.file);
     formData.append("name", name);
     formData.append("price", price);
     formData.append("discount", discount);
@@ -86,21 +97,34 @@ const FashionPost = () => {
     formData.append("town", town);
     formData.append("whatsapp", whatsapp);
     formData.append("category", category._id);
-
+  
     try {
+      console.log("Sending request...");
+  
       const response = await fetch(`${baseURL}fashionpost/${id}`, {
         method: id ? "PUT" : "POST",
         body: formData,
       });
+  
+      console.log("Response status:", response.status);
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        console.error("Error response:", errorMessage);
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+  
       const result = await response.json();
-      console.log(`${id ? "Updated" : "Created"} Product:`, result);
+      console.log("Server response:", result);
+  
       setIsLoading(false);
-      navigate("/");
+      navigate("/"); // Redirect to home or another page
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error submitting form:", error.message);
+      setError("An error occurred while submitting the form. Please try again.");
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center w-full p-4 bg-gray-50 pt-28">
@@ -116,7 +140,7 @@ const FashionPost = () => {
               className="block w-full border rounded p-2"
               onChange={(e) => handleFileChange(e, setPicture)}
             />
-            {picture && <img src={picture} alt="Preview" className="mt-2 w-full" />}
+            {picture.preview && <img src={picture.preview} alt="Preview" className="mt-2 w-full" />}
           </div>
           <div className="w-1/2">
             <input
@@ -125,7 +149,9 @@ const FashionPost = () => {
               className="block w-full border rounded p-2"
               onChange={(e) => handleFileChange(e, setPictureSec)}
             />
-            {pictureSec && <img src={pictureSec} alt="Preview" className="mt-2 w-full" />}
+            {pictureSec.preview && (
+              <img src={pictureSec.preview} alt="Preview" className="mt-2 w-full" />
+            )}
           </div>
         </div>
 
@@ -136,7 +162,7 @@ const FashionPost = () => {
             className="block w-full border rounded p-2"
             onChange={(e) => handleFileChange(e, setVideo)}
           />
-          {video && <video src={video} controls className="mt-2 w-full h-[30vh]" />}
+          {video.preview && <video src={video.preview} controls className="mt-2 w-full h-[30vh]" />}
         </div>
 
         <input
@@ -220,17 +246,15 @@ const FashionPost = () => {
           onChange={(e) => setCondition(e.target.value)}
           className="block w-full border rounded p-2"
         />
-
         {error && <p className="text-red-500">{error}</p>}
-
         <button
           onClick={handleSubmit}
           disabled={isLoading}
-          className={`block w-full py-2 rounded text-white ${
-            isLoading ? "bg-gray-400" : "bg-blue-500"
+          className={`w-full bg-blue-500 text-white rounded p-2 ${
+            isLoading && "opacity-50"
           }`}
         >
-          {isLoading ? "Loading..." : id ? "Update Post" : "Submit"}
+          {isLoading ? "Submitting..." : id ? "Update Post" : "Create Post"}
         </button>
       </div>
     </div>
