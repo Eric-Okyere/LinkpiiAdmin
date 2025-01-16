@@ -221,18 +221,18 @@ const AllUsers = () => {
               </div>
               <div className='flex'>
                 <Link to={`/user-detail/${item._id}`}>
-                  <h3 className={myStyle}>{item.name} {item.lastname}</h3>
+                  <h3 className={`${myStyle}`}>{item.name} {item.lastname}</h3>
                 </Link>
               </div>
-              <h3 className={`${myStyle} line-clamp-2 break-words`}>{item.email}</h3>
-              <h3 className={myStyle}>{item.phone}</h3>
-              <h3 className={myStyle}>
+              <h3 className={`${myStyle} line-clamp-2 break-words -mt-4`}>{item.email}</h3>
+              <h3 className={`${myStyle} -mt-4`}>{item.phone}</h3>
+              <h3 className={`${myStyle} -mt-4`}>
                 {formatDate(item.dateCreated)}
               </h3>
 
               <button
               onClick={() => handleWhatsApp(item.phone)}
-              className="bg-green-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+              className="bg-green-500 font-uniquifier mx-2 mb-0 w-full text-white p-2 rounded"
             >
               WhatsApp
             </button>
@@ -240,7 +240,7 @@ const AllUsers = () => {
 
             <button
             onClick={() => handleSendSMS(item.phone)}
-            className="bg-purple-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+            className="bg-purple-500 font-uniquifier mx-2 w-full text-white p-2 rounded -mt-2"
           >
             Send SMS
           </button>
@@ -248,7 +248,7 @@ const AllUsers = () => {
 
               <button
                 onClick={() => handleEdit(item._id)}
-                className="bg-black font-uniquifier m-2 w-full text-white p-2 rounded"
+                className="bg-black font-uniquifier mx-2 w-full text-white p-2 rounded -mt-2"
               >
                 Edit
               </button>
@@ -256,7 +256,7 @@ const AllUsers = () => {
               {!item.report && (
                 <button
                   onClick={() => handleReport(item._id)}
-                  className="bg-blue-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+                  className="bg-blue-500 font-uniquifier mx-2 w-full text-white p-2 rounded -mt-2"
                 >
                   Report
                 </button>
@@ -265,7 +265,7 @@ const AllUsers = () => {
               {item.report && (
                 <button
                   onClick={() => handleRectify(item._id)}
-                  className="bg-red-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+                  className="bg-red-500 font-uniquifier mx-2 w-full text-white p-2 rounded -mt-2"
                 >
                   Rectify
                 </button>
@@ -273,14 +273,14 @@ const AllUsers = () => {
 
               <button
                 onClick={() => handleUpdateUserpass(item._id)}
-                className="bg-green-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+                className="bg-green-500 font-uniquifier mx-2 w-full text-white p-2 rounded -mt-2"
               >
                 Change Password
               </button>
 
               <button
                 onClick={() => handleDelete(item._id)}
-                className="bg-red-500 font-uniquifier m-2 w-full text-white p-2 rounded"
+                className="bg-red-500 font-uniquifier mx-2 w-full text-white p-2 rounded -mt-2"
               >
                 Delete
               </button>

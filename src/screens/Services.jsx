@@ -124,23 +124,27 @@ const Services = () => {
         <h1 className='font-bold'>ALL SERVICES</h1>
         <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Products: {productCount}</h2>
       </div>
-      <div className="flex flex-wrap justify-around ">
-        {loading ? (
-          <div className="flex items-center justify-center w-full h-full">
-            <BeatLoader color={'#36D7B7'} loading={loading} />
-          </div>
+      <div className="flex flex-wrap justify-center items-start gap-4 p-0">
+  {loading ? (
+    <div className="flex items-center justify-center w-full h-full">
+      <BeatLoader color={'#36D7B7'} loading={loading} />
+    </div>
+  ) : (
+    productFilter.map((item) => (
+      <Card className="max-w-sm bg-[#f2f2f2] flex flex-col" key={item.id}>
+        <img src={item.picture} alt="image 1" className="w-full object-contain" />
+        <img src={item.picturesec} alt="image 2" className="w-full object-contain" />
+
+        {item.video ? (
+          <video style={{ width: '100%', height: '300px', marginTop: "20px" }} controls>
+            <source src={item.video} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         ) : (
-          productFilter.map((item) => (
-            <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item.id}>
-              <img width={500} height={500} src={item.picture} alt="image 1" />
-              <img width={500} height={500} src={item.picturesec} alt="image 1" />
-            
-              {item.video && (
-                <video width="500" height="500" controls>
-                  <source src={item.video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              )}
+          <div className="w-full h-[300px] bg-gray-200 flex items-center justify-center text-gray-400">
+            No Video Available
+          </div>
+        )}
             
               <h5 className={`${myStyle}, text-2xl`}>
                 {item.name}

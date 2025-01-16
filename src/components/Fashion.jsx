@@ -157,27 +157,24 @@ const Fashion = () => {
         </button>
       </div>
 
-      <div className="flex flex-wrap justify-around">
+      <div className="flex flex-wrap justify-center items-start gap-4 p-0">
   {loading ? (
     <div className="flex items-center justify-center w-full h-full">
       <BeatLoader color={'#36D7B7'} loading={loading} />
     </div>
   ) : (
     productFilter.map((item) => (
-      <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2] min-h-[500px]" key={item.id}>
+      <Card className="max-w-sm bg-[#f2f2f2] flex flex-col" key={item.id}>
         <img src={item.picture} alt="image 1" className="w-full object-contain" />
         <img src={item.picturesec} alt="image 2" className="w-full object-contain" />
 
-        {/* Conditionally render video if available */}
         {item.video ? (
-        <video style={{ width: '100%', height: '300px', marginTop:"20px" }} controls>
-        <source src={item.video} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-     
+          <video style={{ width: '100%', height: '300px', marginTop: "20px" }} controls>
+            <source src={item.video} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         ) : (
-          // Placeholder for consistent layout
-          <div className="w-[100%] h-[300px] mt-4 bg-gray-200 flex items-center justify-center text-gray-400">
+          <div className="w-full h-[300px] bg-gray-200 flex items-center justify-center text-gray-400">
             No Video Available
           </div>
         )}
@@ -243,6 +240,19 @@ const Fashion = () => {
   )}
 </div>
 
+
+
+{deleteId && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-4 rounded shadow-md">
+            <p>Are you sure you want to delete this product?</p>
+            <div className="flex justify-between mt-4">
+              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded mr-2">Confirm</button>
+              <button onClick={() => setDeleteId(null)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
