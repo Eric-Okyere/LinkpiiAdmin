@@ -165,10 +165,12 @@ const Services = () => {
               <p className="text-lg mb-2 text-red-500 ml-4">
             {item?.author?.verified ? <p className='text-orange-400'>Verified: Yes</p> : <p className='text-red-500'>Verified: No</p>}
           </p>
+          <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
               <h3 className={myStyle}>Views:{item.views}</h3>
               <h3 className={myStyle}>
                 {formatDate(item.dateCreated)}
               </h3>
+
 
               <div className="mt-4 space-y-4">
                 <button

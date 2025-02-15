@@ -184,6 +184,7 @@ const confirmBoost = () => {
             {item?.author?.verified ? <p className='text-orange-400'>Verified: Yes</p> : <p className='text-red-500'>Verified: No</p>}
           </p>
 
+          <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
           
               <h3 className={myStyle}>
                 {formatDate(item.dateCreated)}

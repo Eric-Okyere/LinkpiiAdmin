@@ -195,13 +195,13 @@ const Fashion = () => {
         <Link to={`/user-detail/${item.author?._id}`}>
           {item.author ? <h3 className={myStyle}>Author: {item.author.name}</h3> : null}
         </Link>
-        <p className="text-lg mb-2 text-red-500 ml-4">
+        <div className="text-lg mb-2 text-red-500 ml-4">
           {item?.author?.verified ? (
             <p className="text-orange-400">Verified: Yes</p>
           ) : (
             <p className="text-red-500">Verified: No</p>
           )}
-        </p>
+        </div>
         <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
         <h3 className={myStyle}>{formatDate(item.dateCreated)}</h3>
 
