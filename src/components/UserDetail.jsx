@@ -123,6 +123,12 @@ const UserDetail = () => {
             <p className='text-red-500'>No picture available</p>
           )}
 
+          {user.ghback ? (
+            <img width={500} height={500} src={user?.ghback} alt="User" className="rounded-lg mb-4" />
+          ) : (
+            <p className='text-red-500'>No picture available</p>
+          )}
+
           <form onSubmit={handleSubmit} className="mt-4">
             <div className="mb-4">
               <label className="block mb-2">Select picture:</label>

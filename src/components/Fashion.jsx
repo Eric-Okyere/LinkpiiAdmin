@@ -9,9 +9,10 @@ const Fashion = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productFilter, setProductFilter] = useState([]);
-  const [productCount, setProductCount] = useState(0); // State for product count
-  const [deleteId, setDeleteId] = useState(null); // State for tracking delete confirmation
-  const [searchTerm, setSearchTerm] = useState(''); // State for search input
+  const [productCount, setProductCount] = useState(0);
+  const [deleteId, setDeleteId] = useState(null); 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [hotId, setHotId] = useState(null)
 
   const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
 
@@ -135,6 +136,65 @@ const Fashion = () => {
     setProductFilter(data);
   };
 
+
+
+
+  const handleUpdateHot = async (id) => {
+    try {
+      const response = await axios.put(`${baseURL}fashionpost/${id}/hot`);
+      const updatedProduct = response.data;
+
+      setProductFilter((prevProducts) => {
+        return prevProducts.map((product) => {
+          if (product.id === id) {
+            return { ...product, hot: true };
+          }
+          return product;
+        });
+      });
+
+      console.log('Product sent to hot', updatedProduct);
+
+      // const boostedProduct = productFilter.find((product) => product.id === id);
+
+      // const postResponse = await axios.post(`${baseURL}boost`, {
+      //   productname: boostedProduct.name,
+      //   pagename: "fashion",
+      // });
+      // alert(boostedProduct.name + ""+ "Boosted Successful")
+  
+      // console.log('Boost record created:', postResponse.data);
+    } catch (error) {
+      console.error('Error updating product approval:', error);
+    }
+  };
+
+
+
+
+  const confirmHot = async () => {
+    try {
+      const response = await axios.put(`${baseURL}fashionpost/${hotId}/hot`);
+      const updatedProduct = response.data;
+  
+      setProductFilter((prevProducts) => {
+        return prevProducts.map((product) => {
+          if (product.id === hotId) {
+            return { ...product, hot: true };
+          }
+          return product;
+        });
+      });
+  
+      console.log('Product sent to hot', updatedProduct);
+      setHotId(null); // close modal
+    } catch (error) {
+      console.error('Error marking product as hot:', error);
+      setHotId(null); // close modal on error too
+    }
+  };
+  
+
   return (
     <div>
       <div className='flex justify-between mx-8 pt-16'>
@@ -227,6 +287,13 @@ const Fashion = () => {
           >
             Boost
           </button>
+          
+          <button
+             onClick={() => setHotId(item.id)}
+            className="bg-black font-uniquifier w-full text-white p-2 rounded"
+          >
+            Hot
+          </button>
 
           <Link to={`/fashionedit/${item.id}`}>
   <button className="bg-yellow-500 mt-4 font-uniquifier w-full text-white p-2 rounded">
@@ -239,6 +306,30 @@ const Fashion = () => {
     ))
   )}
 </div>
+
+
+
+{hotId && (
+  <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-4 rounded shadow-md">
+      <p>Are you sure you want to mark this product as <strong>Hot</strong>?</p>
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={confirmHot}
+          className="bg-black text-white px-4 py-2 rounded mr-2"
+        >
+          Confirm
+        </button>
+        <button
+          onClick={() => setHotId(null)}
+          className="bg-gray-300 px-4 py-2 rounded"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
 
 
