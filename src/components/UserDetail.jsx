@@ -14,7 +14,7 @@ const UserDetail = () => {
   const [picturePreview, setPicturePreview] = useState(null);
   const [isAvatarSelected, setIsAvatarSelected] = useState(false);
   const [isPictureSelected, setIsPictureSelected] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);  // State to track form submission
+  const [isLoading, setIsLoading] = useState(false);  
 
   useEffect(() => {
     axios.get(`${baseURL}userbyid/${id}`)
@@ -100,7 +100,7 @@ const UserDetail = () => {
   }
 
   return (
-    <div className="flex justify-center items-center h-screen pt-96">
+    <div className="flex justify-center items-center h-screen pt-[100vh]">
       {user ? (
         <div className="text-center p-8 bg-#c8c5c5 shadow-2xl rounded-lg">
           <h1 className="text-3xl font-bold mb-4">{user.name} {user.lastname}</h1>
