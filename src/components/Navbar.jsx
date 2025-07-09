@@ -30,7 +30,7 @@ const Navbar = () => {
     <nav className="bg-[#f2f2f2] p-4 fixed w-full z-10">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-black flex w-7 text-xl font-bold font-serif">
-          <img src={Logo} alt="logo" />
+          <img className='rounded-full' src={Logo} alt="logo" />
           <h1>LinkPii</h1>
         </div>
 
@@ -113,6 +113,11 @@ const Navbar = () => {
                 <li className="px-4 py-2">
                 <Link to="/">General</Link>
                 </li>
+
+                <li className="px-4 py-2">
+                <Link to="hot">Hot Products</Link>
+                </li>
+
                 <li className="px-4 py-2">
                   <Link to="/services">All Services</Link>
                 </li>

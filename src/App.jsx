@@ -41,6 +41,7 @@ import ForgotPass from './components/ForgotPass';
 import UpdateUser from './components/UpdateUser';
 import AdminEditPass from './components/AdminEditPass';
 import FashionPost from './components/FashionPost';
+import HotProducts from './components/HotProducts';
 
 const SESSION_DURATION = 60 * 60 * 1000; 
 
@@ -109,6 +110,7 @@ function App() {
             <Route path="/carrent" element={<RentCars />} />
             <Route path="/quip" element={<Equipment />} />
             <Route path="/report" element={<Reports />} />
+            <Route path="/hot" element={<HotProducts />} />
             <Route path="/about" element={<About />} />
             <Route path="/mecha" element={<NewMechanics />} />
             <Route path="/reqt" element={<ForgotPass />} />
