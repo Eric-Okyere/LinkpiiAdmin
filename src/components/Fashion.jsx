@@ -13,6 +13,11 @@ const Fashion = () => {
   const [deleteId, setDeleteId] = useState(null); 
   const [searchTerm, setSearchTerm] = useState('');
   const [hotId, setHotId] = useState(null)
+  const [approveId, setApproveId] = useState(null);
+  const [boostId, setBoostId] = useState(null);
+  const [editId, setEditId] = useState(null);
+ 
+
 
   const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
 
@@ -194,120 +199,270 @@ const Fashion = () => {
     }
   };
   
+  
 
-  return (
-    <div>
-      <div className='flex justify-between mx-8 pt-16'>
-        <h1 className='font-bold'>ALL FASHION</h1>
-        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Products: {productCount}</h2>
+ return (
+  <div className="min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row justify-between items-center px-8 pt-16 pb-4">
+      <h1 className="text-3xl font-bold text-gray-800">All Fashion Items</h1>
+      <div className="mt-4 md:mt-0 bg-white text-gray-700 rounded-lg shadow px-6 py-2 text-lg">
+        Total Products: <span className="font-semibold">{productCount}</span>
       </div>
-
-      {/* Search Input and Button */}
-      <div className='flex justify-center my-4'>
-        <button onClick={handleClear} className="bg-red-500 text-white px-4 py-2 ml-2 rounded-lg">Clear</button>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search products..."
-          className="p-2 border border-gray-300 rounded-l"
-        />
-        <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded-r">
-          Search
-        </button>
-      </div>
-
-      <div className="flex flex-wrap justify-center items-start gap-4 p-0">
-  {loading ? (
-    <div className="flex items-center justify-center w-full h-full">
-      <BeatLoader color={'#36D7B7'} loading={loading} />
     </div>
-  ) : (
-    productFilter.map((item) => (
-      <Card className="max-w-sm bg-[#f2f2f2] flex flex-col" key={item.id}>
-        <img src={item.picture} alt="image 1" className="w-full object-contain" />
-        <img src={item.picturesec} alt="image 2" className="w-full object-contain" />
 
-        {item.video ? (
-          <video style={{ width: '100%', height: '300px', marginTop: "20px" }} controls>
-            <source src={item.video} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <div className="w-full h-[300px] bg-gray-200 flex items-center justify-center text-gray-400">
-            No Video Available
-          </div>
-        )}
+    {/* Search Bar */}
+    <div className="flex justify-center items-center gap-2 px-4 py-4">
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search products..."
+        className="px-4 py-2 border border-gray-300 rounded-md w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button onClick={handleSearch} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-all">
+        Search
+      </button>
+      <button onClick={handleClear} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-all">
+        Clear
+      </button>
+    </div>
 
-        <h5 className={`${myStyle} text-2xl`}>{item.name}</h5>
-        <h3 className={myStyle}>View: {item.views}</h3>
-        <h3 className={myStyle}>Cate: {item?.category?.name}</h3>
-        <h3 className={myStyle}>Condi: {item?.condition}</h3>
-        <h3 className={myStyle}>Gh₵{item.price}</h3>
-        <h3 className={myStyle}>{item.discount}%</h3>
-        <h3 className={myStyle}>{item.description}</h3>
-        <h3 className={myStyle}>{item.region}</h3>
-        <h3 className={myStyle}>{item.town}</h3>
-        <h3 className={myStyle}>Phone: {item.phone}</h3>
-        <h3 className={myStyle}>Whatsapp: {item.whatsapp}</h3>
-        <h3 className={myStyle}>{item.location}</h3>
-
-        <Link to={`/user-detail/${item.author?._id}`}>
-          {item.author ? <h3 className={myStyle}>Author: {item.author.name}</h3> : null}
-        </Link>
-        <div className="text-lg mb-2 text-red-500 ml-4">
-          {item?.author?.verified ? (
-            <p className="text-orange-400">Verified: Yes</p>
-          ) : (
-            <p className="text-red-500">Verified: No</p>
-          )}
+    {/* Product Cards */}
+    <div className="flex flex-wrap justify-center gap-6 px-4">
+      {loading ? (
+        <div className="flex items-center justify-center w-full h-64">
+          <BeatLoader color={'#36D7B7'} loading={loading} />
         </div>
-        <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
-        <h3 className={myStyle}>{formatDate(item.dateCreated)}</h3>
+      ) : (
+        productFilter.map((item) => {
+           const originalPrice = parseFloat(item.price);
+            const discount = parseFloat(item.discount);
+            const discountedPrice = originalPrice - (originalPrice * discount / 100);
 
-        <div className="mt-4 space-y-4">
-          <button
-            onClick={() => handleDelete(item.id)}
-            className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-          >
-            Delete
-          </button>
+            return (
+          <Card className="w-full max-w-sm bg-white shadow-md rounded-lg overflow-hidden" key={item.id}>
+            <img src={item.picture} alt="image 1" className="w-full object-cover h-56" />
+            <img src={item.picturesec} alt="image 2" className="w-full object-cover h-56" />
 
-          {!item.approved && (
-            <button
-              onClick={() => handleUpdateApproval(item.id)}
-              className="bg-green-500 font-uniquifier w-full text-white p-2 rounded"
-            >
-              Approve
-            </button>
-          )}
-          <button
-            onClick={() => handleUpdateBoost(item.id)}
-            className="bg-blue-600 font-uniquifier w-full text-white p-2 rounded"
-          >
-            Boost
-          </button>
-          
-          <button
-             onClick={() => setHotId(item.id)}
-            className="bg-black font-uniquifier w-full text-white p-2 rounded"
-          >
-            Hot
-          </button>
+            {item.video ? (
+              <video className="w-full h-64 mt-4" controls>
+                <source src={item.video} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-400 text-sm">
+                No Video Available
+              </div>
+            )}
 
-          <Link to={`/fashionedit/${item.id}`}>
-  <button className="bg-yellow-500 mt-4 font-uniquifier w-full text-white p-2 rounded">
+            <div className="p-4 text-gray-700 space-y-1">
+              <h5 className="text-xl font-bold">{item.name}</h5>
+              <p>Views: {item.views}</p>
+              <p>Category: {item?.category?.name}</p>
+              <p>Condition: {item?.condition}</p>
+              <p className="font-semibold text-lg text-green-600">Gh₵{item.price}</p>
+              <p>Discount: {item.discount}%</p>
+               <p>
+          <span className="text-gray-500 line-through">
+            Gh₵{originalPrice.toFixed(2)}
+          </span>{' '}
+          <span className="text-green-600 font-semibold">
+            Gh₵{discountedPrice.toFixed(2)}
+          </span>
+        </p>
+        <p className="text-sm text-orange-500">
+          You save Gh₵{(originalPrice * discount / 100).toFixed(2)} ({item.discount}%)
+        </p>
+ 
+
+              <p>{item.description}</p>
+              <p>{item.region}, {item.town}</p>
+              <p>Phone: <a href={`tel:${item.phone}`} className="text-blue-600 hover:underline">{item.phone}</a></p>
+              <p>WhatsApp: <a href={`https://wa.me/${item.whatsapp}`} target="_blank" className="text-green-600 hover:underline">{item.whatsapp}</a></p>
+              <p>Location: {item.location}</p>
+
+              <Link to={`/user-detail/${item.author?._id}`} className="block text-blue-500 hover:underline">
+                {item.author && <>Author: {item.author.name}</>}
+              </Link>
+              <p>Verified: <span className={item?.author?.verified ? 'text-green-600' : 'text-red-500'}>
+                {item?.author?.verified ? 'Yes' : 'No'}
+              </span></p>
+
+              <p>NumofBoost: <span className={'text-green-600' }>
+                {item.numofBoost}
+              </span></p>
+
+              <p>DateBoost: <span className={'text-green-600'}>
+                {new Date(item.dateBoost).toLocaleString('en-US', {
+              weekday: 'short',
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: true,
+            })}
+              </span></p>
+
+                <p>NumofBoost: <span className={'text-blue-500' }>
+                {item.numofHot}
+              </span></p>
+              <p>DateHot: <span className={'text-blue-500' }>
+               {new Date(item.dateHot).toLocaleString('en-US', {
+              weekday: 'short',
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: true,
+            })}
+              </span></p>
+              <p>Author Phone: {item?.author?.phone}</p>
+              <p className="text-sm text-gray-500">Posted: {formatDate(item.dateCreated)}</p>
+              <p className="text-sm text-gray-500">DateHot: {formatDate(item.dateHot)}</p>
+              <p className="text-sm text-gray-500">BoostDate: {formatDate(item.dateBoost)}</p>
+            </div>
+
+           <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+ <button
+  onClick={() => handleDelete(item.id)}  // or item._id if that's the case
+  className="bg-red-500 text-white py-2 rounded-md"
+>
+  Delete
+</button>
+
+
+  {!item.approved && (
+    <button
+      onClick={() => setApproveId(item.id)}
+      className="bg-green-600 text-white py-2 rounded-md"
+    >
+      Approve
+    </button>
+  )}
+
+  <button
+    onClick={() => setBoostId(item.id)}
+    className="bg-blue-600 text-white py-2 rounded-md"
+  >
+    Boost
+  </button>
+
+ <button
+  onClick={() => {
+    console.log('HOT ID:', item.id);
+    setHotId(item.id);
+  }}
+  className="bg-black text-white py-2 rounded-md"
+>
+  Hot
+</button>
+
+
+  <button
+    onClick={() => setEditId(item.id)}
+    className="bg-yellow-500 text-white py-2 rounded-md"
+  >
     Edit
   </button>
-</Link>
-
-        </div>
-      </Card>
-    ))
-  )}
 </div>
 
+          </Card>
+            )
+})
+      )}
+    </div>
 
+   {/* Approve Confirmation */}
+{approveId && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow-lg">
+      <p>Approve this product?</p>
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={() => {
+            handleUpdateApproval(approveId);
+            setApproveId(null);
+          }}
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Confirm
+        </button>
+        <button onClick={() => setApproveId(null)} className="bg-gray-300 px-4 py-2 rounded">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* Boost Confirmation */}
+{boostId && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow-lg">
+      <p>Boost this product?</p>
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={() => {
+            handleUpdateBoost(boostId);
+            setBoostId(null);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Confirm
+        </button>
+        <button onClick={() => setBoostId(null)} className="bg-gray-300 px-4 py-2 rounded">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* Edit Confirmation */}
+{editId && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow-lg">
+      <p>Edit this product?</p>
+      <div className="flex justify-between mt-4">
+        <Link to={`/fashionedit/${editId}`}>
+          <button className="bg-yellow-500 text-white px-4 py-2 rounded">
+            Confirm
+          </button>
+        </Link>
+        <button onClick={() => setEditId(null)} className="bg-gray-300 px-4 py-2 rounded">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{deleteId && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow-md">
+      <p className="mb-4">Are you sure you want to delete this product?</p>
+      <div className="flex justify-between">
+        <button
+          onClick={confirmDelete}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mr-2"
+        >
+          Confirm
+        </button>
+        <button
+          onClick={() => setDeleteId(null)}
+          className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
 {hotId && (
   <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -333,20 +488,9 @@ const Fashion = () => {
 
 
 
-{deleteId && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded shadow-md">
-            <p>Are you sure you want to delete this product?</p>
-            <div className="flex justify-between mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded mr-2">Confirm</button>
-              <button onClick={() => setDeleteId(null)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
+  </div>
+);
 
-    </div>
-  );
 };
 
 export default Fashion;
