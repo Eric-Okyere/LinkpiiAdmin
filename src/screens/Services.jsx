@@ -9,206 +9,140 @@ const Services = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productFilter, setProductFilter] = useState([]);
-  const [productCount, setProductCount] = useState(0); // New state for product count
-  const [deleteId, setDeleteId] = useState(null); // State for tracking delete confirmation
+  const [productCount, setProductCount] = useState(0);
+  const [deleteId, setDeleteId] = useState(null);
 
-  const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
-
-  const apiGet = () => {
+  useEffect(() => {
     fetch(`${baseURL}services`)
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((json) => {
         setData(json);
         setProductFilter(json);
         setLoading(false);
       })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
+      .catch((err) => {
+        console.error('Error fetching data:', err);
         setLoading(false);
       });
-  };
 
-  const fetchProductCount = async () => {
-    try {
-      const response = await fetch(`${baseURL}services/get/count`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const productCount = await response.json();
-      setProductCount(productCount); // Set the count in the state
-    } catch (error) {
-      console.error('Error fetching product count:', error.message);
-    }
-  };
-
-  useEffect(() => {
-    apiGet();
-    fetchProductCount();
+    fetch(`${baseURL}services/get/count`)
+      .then((res) => res.json())
+      .then((count) => setProductCount(count))
+      .catch((err) => console.error('Error fetching count:', err));
   }, []);
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+  const formatDate = (dateString) => new Date(dateString).toLocaleDateString(undefined, {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
 
-  const handleDelete = (id) => {
-    // Set the id of the item to be deleted
-    setDeleteId(id);
-  };
+  const handleDelete = (id) => setDeleteId(id);
 
   const confirmDelete = () => {
-    // Perform the deletion
     axios.delete(`${baseURL}services/${deleteId}`)
-      .then((res) => {
-        // Filter out the deleted item from the product list
-        const updatedProducts = productFilter.filter((item) => item.id !== deleteId);
-        setProductCount(productCount - 1);
-        setProductFilter(updatedProducts);
-        // Reset the deleteId state after deletion
+      .then(() => {
+        setProductFilter(prev => prev.filter(item => item.id !== deleteId));
+        setProductCount(prev => prev - 1);
         setDeleteId(null);
       })
-      .catch((error) => console.log(error));
+      .catch((err) => console.error(err));
   };
 
   const handleUpdateApproval = async (id) => {
     try {
       const response = await axios.put(`${baseURL}services/${id}/approve`);
-      const updatedProduct = response.data;
-
-      setProductFilter((prevProducts) => {
-        return prevProducts.map((product) => {
-          if (product.id === id) {
-            return { ...product, approved: true };
-          }
-          return product;
-        });
-      });
-
-      console.log('Product approval updated:', updatedProduct);
-    } catch (error) {
-      console.error('Error updating product approval:', error);
+      setProductFilter(prev =>
+        prev.map(p => (p.id === id ? { ...p, approved: true } : p))
+      );
+    } catch (err) {
+      console.error('Error approving service:', err);
     }
   };
 
   const handleUpdateBoost = async (id) => {
     try {
       const response = await axios.put(`${baseURL}services/${id}/boost`);
-      const updatedProduct = response.data;
-
-      setProductFilter((prevProducts) => {
-        return prevProducts.map((product) => {
-          if (product.id === id) {
-            return { ...product, boost: true };
-          }
-          return product;
-        });
-      });
-
-      console.log('Product approval updated:', updatedProduct);
-
-      const boostedProduct = productFilter.find((product) => product.id === id);
-
-      const postResponse = await axios.post(`${baseURL}boost`, {
+      const boostedProduct = data.find((p) => p.id === id);
+      await axios.post(`${baseURL}boost`, {
         productname: boostedProduct.name,
-        pagename: "fashion",
+        pagename: 'services',
       });
-      alert(boostedProduct.name + ""+ "Boosted Successful")
-    } catch (error) {
-      console.error('Error updating product approval:', error);
+      alert(`${boostedProduct.name} Boosted Successfully`);
+      setProductFilter(prev =>
+        prev.map(p => (p.id === id ? { ...p, boost: true } : p))
+      );
+    } catch (err) {
+      console.error('Error boosting service:', err);
     }
   };
 
   return (
-    <div>
-      <div className='flex justify-between mx-8 pt-16'>
-        <h1 className='font-bold'>ALL SERVICES</h1>
-        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Products: {productCount}</h2>
+    <div className="pt-16 px-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">All Services</h1>
+        <span className="bg-gray-200 px-4 py-2 rounded text-gray-700">Total: {productCount}</span>
       </div>
-      <div className="flex flex-wrap justify-center items-start gap-4 p-0">
-  {loading ? (
-    <div className="flex items-center justify-center w-full h-full">
-      <BeatLoader color={'#36D7B7'} loading={loading} />
-    </div>
-  ) : (
-    productFilter.map((item) => (
-      <Card className="max-w-sm bg-[#f2f2f2] flex flex-col" key={item.id}>
-        <img src={item.picture} alt="image 1" className="w-full object-contain" />
-        <img src={item.picturesec} alt="image 2" className="w-full object-contain" />
 
-        {item.video ? (
-          <video style={{ width: '100%', height: '300px', marginTop: "20px" }} controls>
-            <source src={item.video} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <div className="w-full h-[300px] bg-gray-200 flex items-center justify-center text-gray-400">
-            No Video Available
-          </div>
-        )}
-            
-              <h5 className={`${myStyle}, text-2xl`}>
-                {item.name}
-              </h5>
-              <h3 className={myStyle}> Gh₵{item.price}</h3>
-              <h3 className={myStyle}>{item.description}</h3>
-              <h3 className={myStyle}>{item.region}</h3>
-              <h3 className={myStyle}>{item.town}</h3>
-              <h3 className={myStyle}>Phone:{item.phone}</h3>
-              <h3 className={myStyle}>Whatsapp:{item.whatsapp}</h3>
-              <h3 className={myStyle}>{item.location}</h3>
-              <h3 className={myStyle}>{item?.author?.name}</h3>
-
-                <Link to={`/user-detail/${item.author?._id}`}>
-             {item.author? <h3 className={myStyle}>Author:{item.author.name}</h3>:null} 
-             </Link>
-
-              <p className="text-lg mb-2 text-red-500 ml-4">
-            {item?.author?.verified ? <p className='text-orange-400'>Verified: Yes</p> : <p className='text-red-500'>Verified: No</p>}
-          </p>
-          <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
-              <h3 className={myStyle}>Views:{item.views}</h3>
-              <h3 className={myStyle}>
-                {formatDate(item.dateCreated)}
-              </h3>
-
-
-              <div className="mt-4 space-y-4">
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-                >
-                  Delete
-                </button>
-
-                {!item.approved && (
-                  <button
-                    onClick={() => handleUpdateApproval(item.id)}
-                    className="bg-green-500 font-uniquifier w-full text-white p-2 rounded"
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <BeatLoader color="#36D7B7" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {productFilter.map((item) => (
+            <Card key={item.id} className="bg-white rounded shadow">
+              <img src={item.picture} alt="Main" className="w-full h-48 object-cover" />
+              <img src={item.picturesec} alt="Secondary" className="w-full h-48 object-cover" />
+              {item.video ? (
+                <video className="w-full h-48 mt-2" controls>
+                  <source src={item.video} type="video/mp4" />
+                </video>
+              ) : (
+                <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-sm text-gray-400">No Video</div>
+              )}
+              <div className="p-4 text-sm text-gray-700 space-y-1">
+                <h2 className="text-lg font-semibold">{item.name}</h2>
+                {/* <p className="text-green-600 font-bold">Gh₵{item.price}</p> */}
+                <p>{item.description}</p>
+                <p>{item.region}, {item.town}</p>
+                <p>Phone: <a href={`tel:${item.phone}`} className="text-blue-600 hover:underline">{item.phone}</a></p>
+                <p>
+                  WhatsApp: <a 
+                    href={`https://wa.me/${item.whatsapp}?text=Linkpii will require your picture and a picture of your Ghana card before the approval of ${item.name}.`} 
+                    target="_blank" 
+                    className="text-green-600 hover:underline"
                   >
-                    Approve
-                  </button>
-                )}
-                {/* {!item.boost && ( */}
-                  <button
-                    onClick={() => handleUpdateBoost(item.id)}
-                    className="bg-blue-500 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Boost
-                  </button>
-                {/* )} */}
+                    {item.whatsapp}
+                  </a>
+                </p>
+                <p>📍 {item.location}</p>
+                <p>👁 Views: {item.views}</p>
+                <Link to={`/user-detail/${item.author?._id}`} className="text-blue-500 hover:underline">
+                  Author: {item.author?.name}
+                </Link>
+                <p className={item.author?.verified ? 'text-green-600' : 'text-red-500'}>
+                  Verified: {item.author?.verified ? 'Yes' : 'No'}
+                </p>
+                <p>Author Phone: {item.author?.phone}</p>
+                <p className="text-gray-500">Posted: {formatDate(item.dateCreated)}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
+                  <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white py-2 rounded">Delete</button>
+                  {!item.approved && (
+                    <button onClick={() => handleUpdateApproval(item.id)} className="bg-green-600 text-white py-2 rounded">Approve</button>
+                  )}
+                  <button onClick={() => handleUpdateBoost(item.id)} className="bg-blue-600 text-white py-2 rounded">Boost</button>
+                </div>
               </div>
             </Card>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* Delete Confirmation Dialog */}
       {deleteId && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded shadow-md">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-md">
             <p>Are you sure you want to delete this product?</p>
             <div className="flex justify-between mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded mr-2">Confirm</button>
+              <button onClick={confirmDelete} className="bg-red-600 text-white px-4 py-2 rounded mr-2">Confirm</button>
               <button onClick={() => setDeleteId(null)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
             </div>
           </div>

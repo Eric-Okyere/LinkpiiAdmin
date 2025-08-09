@@ -111,6 +111,9 @@ const Navbar = () => {
             {isServicesOpen && (
               <ul className="absolute left-0 top-full bg-white shadow-lg py-2 rounded-md">
                 <li className="px-4 py-2">
+                <Link to="/food">Food</Link>
+                </li>
+                <li className="px-4 py-2">
                 <Link to="/">General</Link>
                 </li>
 

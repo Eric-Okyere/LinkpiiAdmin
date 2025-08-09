@@ -42,6 +42,8 @@ import UpdateUser from './components/UpdateUser';
 import AdminEditPass from './components/AdminEditPass';
 import FashionPost from './components/FashionPost';
 import HotProducts from './components/HotProducts';
+import AgricPost from './components/AgricPost';
+import Food from './screens/Food';
 
 const SESSION_DURATION = 60 * 60 * 1000; 
 
@@ -119,6 +121,8 @@ function App() {
             <Route path="/user-update/:id" element={<UpdateUser />} />
             <Route path="/user-editpass/:id" element={<AdminEditPass />} />
             <Route path="/fashionedit/:id" element={<FashionPost />} />
+            <Route path="/agricedit/:id" element={<AgricPost />} />
+            <Route path="/food" element={<Food />} />
            
           </Routes>
         </>

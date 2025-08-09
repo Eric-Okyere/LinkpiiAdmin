@@ -15,14 +15,12 @@ const AllProducts = () => {
   const [showApproveConfirmation, setShowApproveConfirmation] = useState(false);
   const [showBoostConfirmation, setShowBoostConfirmation] = useState(false);
   const [approveId, setApproveId] = useState(null);
+  const [editId, setEditId] = useState(null);
 
-  const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
-
-  const apiGet = () => {
+  useEffect(() => {
     fetch(`${baseURL}send`)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
         setData(json);
         setProductFilter(json);
         setLoading(false);
@@ -31,233 +29,159 @@ const AllProducts = () => {
         console.error('Error fetching data:', error);
         setLoading(false);
       });
-  };
 
-  const fetchProductCount = async () => {
-    try {
-      const response = await fetch(`${baseURL}send/get/count`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const productCount = await response.json();
-      console.log('Product Count:', productCount);
-      setProductCount(productCount); // Set the count in the state
-    } catch (error) {
-      console.error('Error fetching product count:', error.message);
-    }
-  };
-
-  useEffect(() => {
-    apiGet();
-    fetchProductCount();
+    fetch(`${baseURL}send/get/count`)
+      .then((res) => res.json())
+      .then((count) => setProductCount(count))
+      .catch((error) => console.error('Error fetching product count:', error));
   }, []);
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+  const formatDate = (dateString) => new Date(dateString).toLocaleDateString(undefined, {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
 
   const handleDelete = (id) => {
-    // Show delete confirmation popup
     setShowDeleteConfirmation(true);
     setDeleteId(id);
   };
 
   const confirmDelete = () => {
-    axios.delete(
-      `${baseURL}send/${deleteId}`,
-    )
-      .then((res) => {
-        const products = productFilter.filter((item) => item.id !== deleteId);
-        setProductCount(productCount - 1);
-        setProductFilter(products);
-        // Hide delete confirmation popup after deletion
+    axios.delete(`${baseURL}send/${deleteId}`)
+      .then(() => {
+        const updated = productFilter.filter(item => item.id !== deleteId);
+        setProductFilter(updated);
+        setProductCount(prev => prev - 1);
         setShowDeleteConfirmation(false);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   };
 
-// approve
+  const handleUpdateApproval = (id) => {
+    setApproveId(id);
+    setShowApproveConfirmation(true);
+  };
 
-const handleUpdateApproval = async (id) => {
-  setShowApproveConfirmation(true);
-  setApproveId(id);
-};
+  const confirmApprove = () => {
+    axios.put(`${baseURL}send/${approveId}/approve`)
+      .then(({ data }) => {
+        const updated = productFilter.map(product =>
+          product.id === approveId ? { ...product, approved: true } : product
+        );
+        setProductFilter(updated);
+        setShowApproveConfirmation(false);
+      })
+      .catch((error) => console.error('Error approving product:', error));
+  };
 
+  const handleUpdateBoost = (id) => {
+    setApproveId(id);
+    setShowBoostConfirmation(true);
+  };
 
-const confirmApprove = () => {
-  axios.put(`${baseURL}send/${approveId}/approve`)
-    .then((response) => {
-      const updatedProduct = response.data;
-
-      setProductFilter((prevProducts) => {
-        return prevProducts.map((product) => {
-          if (product.id === approveId) {
-            return { ...product, approved: true };
-          }
-          return product;
-        });
-      });
-
-      console.log('Product approval updated:', updatedProduct);
-      setShowApproveConfirmation(false);
-    })
-    .catch((error) => {
-      console.error('Error updating product approval:', error);
-    });
-};
-
-const handleUpdateboost = async (id) => {
-  setShowBoostConfirmation(true);
-  setApproveId(id);
-};
-
-
-const confirmBoost = () => {
-  axios.put(`${baseURL}send/${approveId}/boost`)
-    .then((response) => {
-      const updatedProduct = response.data;
-
-      setProductFilter((prevProducts) => {
-        return prevProducts.map((product) => {
-          if (product.id === approveId) {
-            return { ...product, boost: true };
-          }
-          return product;
-        });
-      });
-
-      console.log('Product approval updated:', updatedProduct);
-      setShowBoostConfirmation(false);
-    })
-    .catch((error) => {
-      console.error('Error updating product approval:', error);
-    });
-};
+  const confirmBoost = () => {
+    axios.put(`${baseURL}send/${approveId}/boost`)
+      .then(({ data }) => {
+        const updated = productFilter.map(product =>
+          product.id === approveId ? { ...product, boost: true } : product
+        );
+        setProductFilter(updated);
+        setShowBoostConfirmation(false);
+      })
+      .catch((error) => console.error('Error boosting product:', error));
+  };
 
   return (
-    <div>
-      <div className='flex justify-between mx-8 pt-16'>
-        <h1 className='font-bold'>ALL AGRIC</h1>
-        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Agric Products: {productCount}</h2>
+    <div className="pt-16 px-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">All Agric Products</h1>
+        <span className="bg-gray-200 px-4 py-2 rounded text-gray-700">
+          Total: {productCount}
+        </span>
       </div>
-      <div className="flex flex-wrap justify-center items-start gap-4 p-0">
-  {loading ? (
-    <div className="flex items-center justify-center w-full h-full">
-      <BeatLoader color={'#36D7B7'} loading={loading} />
-    </div>
-  ) : (
-    productFilter.map((item) => (
-      <Card className="max-w-sm bg-[#f2f2f2] flex flex-col" key={item.id}>
-        <img src={item.picture} alt="image 1" className="w-full object-contain" />
-        <img src={item.picturesec} alt="image 2" className="w-full object-contain" />
 
-        {item.video ? (
-          <video style={{ width: '100%', height: '300px', marginTop: "20px" }} controls>
-            <source src={item.video} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <div className="w-full h-[300px] bg-gray-200 flex items-center justify-center text-gray-400">
-            No Video Available
-          </div>
-        )}
-              <h5 className={`${myStyle}, text-2xl`}>
-                {item.name}
-              </h5>
-            
-              <h3 className={myStyle}> Gh₵{item.price}</h3>
-              <h3 className={myStyle}>{item.description}</h3>
-              <h3 className={myStyle}>{item.region}</h3>
-              <h3 className={myStyle}>{item.town}</h3>
-              <h3 className={myStyle}>{item.location}</h3>
-              <h3 className={myStyle}>phone:{item.phone}</h3>
-              <h3 className={myStyle}>whatsapp:{item.whatsapp}</h3>
-              <h3 className={myStyle}>View:{item.views}</h3>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <BeatLoader color="#36D7B7" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {productFilter.map((item) => (
+            <Card key={item.id} className="bg-white rounded shadow">
+              <img src={item.picture} alt="Main" className="w-full h-48 object-cover" />
+              <img src={item.picturesec} alt="Secondary" className="w-full h-48 object-cover" />
+              {item.video ? (
+                <video className="w-full h-48 mt-2" controls>
+                  <source src={item.video} type="video/mp4" />
+                </video>
+              ) : (
+                <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-sm text-gray-400">No Video</div>
+              )}
+              <div className="p-4">
+                <h2 className="text-lg font-semibold mb-1">{item.name}</h2>
+                <p className="text-green-600 font-bold">Gh₵{item.price}</p>
+                <p>{item.description}</p>
+                <p>{item.region}, {item.town}</p>
+                <p className="text-sm">{formatDate(item.dateCreated)}</p>
 
+                <div className="mt-2 text-sm text-gray-600">
+                  <p>📞 {item.phone}</p>
+                  <p>💬 {item.whatsapp}</p>
+                  <p>📍 {item.location}</p>
+                  <p>👁 Views: {item.views}</p>
+                  <Link to={`/user-detail/${item.author?._id}`} className="text-blue-600 hover:underline">
+                    Author: {item?.author?.name}
+                  </Link>
+                  <p className={item?.author?.verified ? 'text-green-500' : 'text-red-500'}>
+                    Verified: {item?.author?.verified ? 'Yes' : 'No'}
+                  </p>
+                  <p>📞 {item?.author?.phone}</p>
+                </div>
 
-              <Link to={`/user-detail/${item.author?._id}`}>
-              <h3 className={myStyle}>Author: {item?.author?.name}</h3>
-              </Link>
-
-              <p className="text-lg mb-2 text-red-500 ml-4">
-            {item?.author?.verified ? <p className='text-orange-400'>Verified: Yes</p> : <p className='text-red-500'>Verified: No</p>}
-          </p>
-
-          <h3 className={myStyle}>Author Phone: {item?.author?.phone}</h3>
-          
-              <h3 className={myStyle}>
-                {formatDate(item.dateCreated)}
-              </h3>
-
-              <div className="mt-4 space-y-4">
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-                >
-                  Delete
-                </button>
-
-                {!item.approved && (
-                  <button
-                    onClick={() => handleUpdateApproval(item.id)}
-                    className="bg-green-500 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                     Approve
-                  </button>
-                )}
-                {/* {!item.boost && ( */}
-                  <button
-                    onClick={() => handleUpdateboost(item.id)}
-                    className="bg-blue-500 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                     Boost
-                  </button>
-                {/* )} */}
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white py-2 rounded">Delete</button>
+                  {!item.approved && (
+                    <button onClick={() => handleUpdateApproval(item.id)} className="bg-green-600 text-white py-2 rounded">Approve</button>
+                  )}
+                  <button onClick={() => handleUpdateBoost(item.id)} className="bg-blue-600 text-white py-2 rounded">Boost</button>
+                  <button onClick={() => setEditId(item.id)} className="bg-yellow-500 text-white py-2 rounded">Edit</button>
+                </div>
               </div>
             </Card>
-          ))
-        )}
-      </div>
-
-{/* approve popup */}
-      {showApproveConfirmation && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded shadow-lg">
-            <p>Are you sure you want to approve this product?</p>
-            <div className="flex justify-center mt-4">
-              <button onClick={confirmApprove} className="bg-green-500 text-white px-4 py-2 mr-4 rounded">Yes</button>
-              <button onClick={() => setShowApproveConfirmation(false)} className="bg-gray-500 text-white px-4 py-2 rounded">No</button>
-            </div>
-          </div>
+          ))}
         </div>
       )}
 
-      {/* Delete Confirmation Popup */}
+      {/* Modals */}
+      {showApproveConfirmation && (
+        <ConfirmationModal text="approve" onConfirm={confirmApprove} onCancel={() => setShowApproveConfirmation(false)} />
+      )}
       {showDeleteConfirmation && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded shadow-lg">
-            <p>Are you sure you want to delete this product?</p>
-            <div className="flex justify-center mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 mr-4 rounded">Yes</button>
-              <button onClick={() => setShowDeleteConfirmation(false)} className="bg-gray-500 text-white px-4 py-2 rounded">No</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmationModal text="delete" onConfirm={confirmDelete} onCancel={() => setShowDeleteConfirmation(false)} />
       )}
       {showBoostConfirmation && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded shadow-lg">
-            <p>Are you sure you want to boost this product?</p>
-            <div className="flex justify-center mt-4">
-              <button onClick={confirmBoost} className="bg-red-500 text-white px-4 py-2 mr-4 rounded">Yes</button>
-              <button onClick={() => setShowBoostConfirmation(false)} className="bg-gray-500 text-white px-4 py-2 rounded">No</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmationModal text="boost" onConfirm={confirmBoost} onCancel={() => setShowBoostConfirmation(false)} />
+      )}
+      {editId && (
+        <ConfirmationModal
+          text="edit"
+          onConfirm={() => window.location.href = `/agricedit/${editId}`}
+          onCancel={() => setEditId(null)}
+        />
       )}
     </div>
   );
 };
+
+const ConfirmationModal = ({ text, onConfirm, onCancel }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow-lg">
+      <p>Are you sure you want to {text} this product?</p>
+      <div className="flex justify-center mt-4 space-x-4">
+        <button onClick={onConfirm} className="bg-blue-600 text-white px-4 py-2 rounded">Yes</button>
+        <button onClick={onCancel} className="bg-gray-400 text-white px-4 py-2 rounded">No</button>
+      </div>
+    </div>
+  </div>
+);
 
 export default AllProducts;

@@ -26,24 +26,25 @@ const AgricPost = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+     setIsLoading(true); 
     // Fetch categories for the dropdown
-    fetch(`${baseURL}fashion`)
+    fetch(`${baseURL}categories`)
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error("Error fetching categories:", err));
 
     // If `id` exists, fetch product data for editing
     if (id) {
-      fetch(`${baseURL}fashionpost/${id}`)
+      fetch(`${baseURL}send/${id}`)
         .then((res) => res.json())
         .then((item) => {
           setName(item.name || "");
           setPrice(item.price || "");
-          setDiscount(item.discount || "");
+        //   setDiscount(item.discount || "");
           setPhone(item.phone || "");
           setDescription(item.description || "");
           setCategory(item.category || {});
-          setCondition(item.condition || "");
+        //   setCondition(item.condition || "");
           setLocation(item.location || "");
           setRegion(item.region || "");
           setTown(item.town || "");
@@ -53,7 +54,10 @@ const AgricPost = () => {
           if (item.video) setVideo({ file: null, preview: item.video });
         })
         .catch((err) => console.error("Error fetching product details:", err));
-    }
+        setIsLoading(false);
+    }else {
+    setIsLoading(false); 
+  }
   }, [id]);
 
   // Handle file upload preview
@@ -88,20 +92,20 @@ const AgricPost = () => {
     if (video.file) formData.append("video", video.file);
     formData.append("name", name);
     formData.append("price", price);
-    formData.append("discount", discount);
+    // formData.append("discount", discount);
     formData.append("phone", phone);
     formData.append("description", description);
-    formData.append("condition", condition);
+    // formData.append("condition", condition);
     formData.append("location", location);
     formData.append("region", region);
     formData.append("town", town);
     formData.append("whatsapp", whatsapp);
-    formData.append("category", category._id);
+    // formData.append("category", category._id);
   
     try {
       console.log("Sending request...");
   
-      const response = await fetch(`${baseURL}fashionpost/${id}`, {
+      const response = await fetch(`${baseURL}send/${id}`, {
         method: id ? "PUT" : "POST",
         body: formData,
       });
@@ -117,7 +121,7 @@ const AgricPost = () => {
       console.log("Server response:", result);
   
       setIsLoading(false);
-      navigate("/"); // Redirect to home or another page
+      navigate("/agric"); // Redirect to home or another page
     } catch (error) {
       console.error("Error submitting form:", error.message);
       setError("An error occurred while submitting the form. Please try again.");
@@ -128,6 +132,16 @@ const AgricPost = () => {
 
   return (
     <div className="flex flex-col items-center w-full p-4 bg-gray-50 pt-28">
+        {isLoading ? (
+     <div className="flex items-center justify-center h-32">
+  <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+  </svg>
+</div>
+
+    ) : (
+        <>
       <h1 className="text-xl font-bold text-gray-800 mb-6">
         {id ? "Edit Post" : "Create Post"}
       </h1>
@@ -257,6 +271,7 @@ const AgricPost = () => {
           {isLoading ? "Submitting..." : id ? "Update Post" : "Create Post"}
         </button>
       </div>
+ </>)}
     </div>
   );
 };

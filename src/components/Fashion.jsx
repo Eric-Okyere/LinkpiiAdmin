@@ -278,12 +278,22 @@ const Fashion = () => {
               <p>{item.description}</p>
               <p>{item.region}, {item.town}</p>
               <p>Phone: <a href={`tel:${item.phone}`} className="text-blue-600 hover:underline">{item.phone}</a></p>
-              <p>WhatsApp: <a href={`https://wa.me/${item.whatsapp}`} target="_blank" className="text-green-600 hover:underline">{item.whatsapp}</a></p>
-              <p>Location: {item.location}</p>
+             <p>
+                  WhatsApp: <a 
+                    href={`https://wa.me/${item.whatsapp}?text=Linkpii will require your picture and a picture of your Ghana card before the approval of your product. Your documents are encrypted and secure. We do not share or misuse your data.`} 
+                    target="_blank" 
+                    className="text-green-600 hover:underline"
+                  >
+                    {item.whatsapp}
+                  </a>
+                </p> 
+                <p>Location: {item.location}</p>
 
               <Link to={`/user-detail/${item.author?._id}`} className="block text-blue-500 hover:underline">
                 {item.author && <>Author: {item.author.name}</>}
               </Link>
+
+               <p>Author Phone: {item?.author?.phone}</p>
               <p>Verified: <span className={item?.author?.verified ? 'text-green-600' : 'text-red-500'}>
                 {item?.author?.verified ? 'Yes' : 'No'}
               </span></p>
@@ -320,7 +330,7 @@ const Fashion = () => {
               hour12: true,
             })}
               </span></p>
-              <p>Author Phone: {item?.author?.phone}</p>
+             
               <p className="text-sm text-gray-500">Posted: {formatDate(item.dateCreated)}</p>
               <p className="text-sm text-gray-500">DateHot: {formatDate(item.dateHot)}</p>
               <p className="text-sm text-gray-500">BoostDate: {formatDate(item.dateBoost)}</p>

@@ -53,6 +53,9 @@ const Sidebar = ({ isOpen, location }) => {
           <Link to="/whatsap">Whatsapp</Link>
         </li>
         <li className={`px-4 py-2 text-gray-700 hover:text-gray-200 ${location.pathname === '/fashion' ? 'bg-green-300' : ''}`}>
+          <Link to="/food">Food</Link>
+        </li>
+        <li className={`px-4 py-2 text-gray-700 hover:text-gray-200 ${location.pathname === '/fashion' ? 'bg-green-300' : ''}`}>
           <Link to="/">General</Link>
         </li>
 
