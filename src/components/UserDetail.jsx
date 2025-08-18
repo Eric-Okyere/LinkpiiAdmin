@@ -5,6 +5,8 @@ import baseURL from '../assets/baseURL';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
+import { FaWhatsapp } from "react-icons/fa";
+
 
 
 const UserDetail = () => {
@@ -123,12 +125,27 @@ const UserDetail = () => {
     }
   };
 
+  const formatPhoneForWhatsApp = (phone) => {
+  if (!phone) return "";
+
+  let cleaned = phone.replace(/\D/g, "");
+
+  if (cleaned.startsWith("0")) {
+    cleaned = "233" + cleaned.slice(1);
+  }
+  if (phone.startsWith("+")) {
+    cleaned = phone.slice(1);
+  }
+
+  return cleaned;
+};
+
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
   return (
-  <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+  <div className="min-h-screen bg-gray-100 p-4 md:p-8, pt-10">
     {user ? (
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 bg-white shadow-xl rounded-xl overflow-hidden">
         {/* Left Column – User Info */}
@@ -138,6 +155,16 @@ const UserDetail = () => {
           </h1>
           <p className="text-gray-600 mb-1">📧 <strong>Email:</strong> {user.email}</p>
           <p className="text-gray-600 mb-1">📞 <strong>Phone:</strong> {user.phone}</p>
+            {user.phone && (
+          <a
+            href={`https://wa.me/${formatPhoneForWhatsApp(user.phone)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow transition"
+          >
+            <FaWhatsapp size={20} /> Chat on WhatsApp
+          </a>
+        )}
           <p className="text-gray-600 mb-1">
             ✅ <strong>Verified:</strong> {user.verified ? <span className="text-green-600">Yes</span> : <span className="text-red-500">No</span>}
           </p>
