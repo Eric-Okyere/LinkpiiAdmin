@@ -116,7 +116,7 @@ console.log(currentTimeFormatted);
     const internationalPhone = `${formattedPhone}`;
     
     const message = encodeURIComponent(
-      `Hello! You whatsapped ${item.recname} on Linkpii. Were you able to reach out to the business?`
+      `Hello! You whatsapped ${item.recname} on Linkpii.com. Were you able to reach out to the business?`
     );
 
     const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
@@ -130,7 +130,7 @@ console.log(currentTimeFormatted);
     const internationalPhone = `${formattedPhone}`;
     
     const message = encodeURIComponent(
-      `Hello! You were whatsapped by ${item.name}on Linkpii. Was the client able to reach out to you?`
+      `Hello! You were whatsapped by ${item.name} on Linkpii.com. Was the client able to reach out to you?`
     );
 
     const whatsappUrl = `https://wa.me/${internationalPhone}?text=${message}`;
