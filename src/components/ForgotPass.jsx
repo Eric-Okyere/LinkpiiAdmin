@@ -3,6 +3,7 @@ import { Card } from 'flowbite-react';
 import { BeatLoader } from 'react-spinners';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
+import { Link } from 'react-router-dom';
 
 const ForgotPass = () => {
   const [data, setData] = useState([]);
@@ -21,7 +22,8 @@ const ForgotPass = () => {
       .then((json) => {
         if (json.success) {
           console.log(json.data);  // Output the data array to the console
-          setData(json.data);  // Set the full data for other purposes if needed
+          setData(json.data);
+           console.log("First Item:", json.data[0]);
           setProductFilter(json.data);  // Set the data array for rendering the list
           setProductCount(json.data.length);  // Count the number of items
         } else {
@@ -77,9 +79,11 @@ const ForgotPass = () => {
           Array.isArray(productFilter) && productFilter.length > 0 ? (
             productFilter.map((item) => (
               <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item._id}>
+                 {/* <Link to={`/user-detail/${item.userId}` } > */}
                 <h5 className={`${myStyle}, text-2xl`}>
                   Request from {item.phone}
                 </h5>
+              {/* </Link> */}
                 <h3 className={myStyle}>{item.usermessage}</h3>
                 <h3 className={myStyle}>
                   Created on {formatDate(item.dateCreated)}
@@ -92,6 +96,7 @@ const ForgotPass = () => {
                     Delete
                   </button>
                 </div>
+              
               </Card>
             ))
           ) : (
