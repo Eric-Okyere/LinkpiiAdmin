@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import baseURL from "../assets/baseURL";
+import { Container, Card, Button } from './ui';
+
+const inputClass = "block w-full rounded-xl border border-ink-200 bg-ink-50 p-3 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100";
+const labelClass = "mb-1.5 block text-sm font-semibold text-ink-700";
 
 const FashionPost = () => {
   const navigate = useNavigate();
@@ -79,9 +83,9 @@ const FashionPost = () => {
     //   setError("Please fill in all required fields.");
     //   return;
     // }
-  
+
     setIsLoading(true);
-  
+
     const formData = new FormData();
     formData.append("picture", picture.file);
     formData.append("pictureSec", pictureSec.file);
@@ -97,25 +101,25 @@ const FashionPost = () => {
     formData.append("town", town);
     formData.append("whatsapp", whatsapp);
     formData.append("category", category._id);
-  
+
     try {
       console.log("Sending request...");
-  
+
       const response = await fetch(`${baseURL}fashionpost/${id}`, {
         method: id ? "PUT" : "POST",
         body: formData,
       });
-  
+
       console.log("Response status:", response.status);
       if (!response.ok) {
         const errorMessage = await response.text();
         console.error("Error response:", errorMessage);
         throw new Error(`Request failed with status ${response.status}`);
       }
-  
+
       const result = await response.json();
       console.log("Server response:", result);
-  
+
       setIsLoading(false);
       navigate("/"); // Redirect to home or another page
     } catch (error) {
@@ -124,140 +128,181 @@ const FashionPost = () => {
       setIsLoading(false);
     }
   };
-  
+
 
   return (
-    <div className="flex flex-col items-center w-full p-4 bg-gray-50 pt-28">
-      <h1 className="text-xl font-bold text-gray-800 mb-6">
-        {id ? "Edit Post" : "Create Post"}
-      </h1>
-      <div className="w-full max-w-lg space-y-4">
-        <div className="flex space-x-4">
-          <div className="w-1/2">
-            <input
-              type="file"
-              accept="image/*"
-              className="block w-full border rounded p-2"
-              onChange={(e) => handleFileChange(e, setPicture)}
-            />
-            {picture.preview && <img src={picture.preview} alt="Preview" className="mt-2 w-full" />}
-          </div>
-          <div className="w-1/2">
-            <input
-              type="file"
-              accept="image/*"
-              className="block w-full border rounded p-2"
-              onChange={(e) => handleFileChange(e, setPictureSec)}
-            />
-            {pictureSec.preview && (
-              <img src={pictureSec.preview} alt="Preview" className="mt-2 w-full" />
-            )}
-          </div>
-        </div>
+    <Container className="max-w-2xl">
+      <div className="min-h-[60vh] bg-ink-50 py-8">
+        <Card className="p-6 sm:p-8">
+          <h1 className="mb-6 font-display text-xl font-bold text-ink-900">
+            {id ? "Edit Post" : "Create Post"}
+          </h1>
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="w-1/2">
+                <label className={labelClass}>Main picture</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className={inputClass}
+                  onChange={(e) => handleFileChange(e, setPicture)}
+                />
+                {picture.preview && <img src={picture.preview} alt="Preview" className="mt-2 w-full rounded-xl" />}
+              </div>
+              <div className="w-1/2">
+                <label className={labelClass}>Secondary picture</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className={inputClass}
+                  onChange={(e) => handleFileChange(e, setPictureSec)}
+                />
+                {pictureSec.preview && (
+                  <img src={pictureSec.preview} alt="Preview" className="mt-2 w-full rounded-xl" />
+                )}
+              </div>
+            </div>
 
-        <div>
-          <input
-            type="file"
-            accept="video/*"
-            className="block w-full border rounded p-2"
-            onChange={(e) => handleFileChange(e, setVideo)}
-          />
-          {video.preview && <video src={video.preview} controls className="mt-2 w-full h-[30vh]" />}
-        </div>
+            <div>
+              <label className={labelClass}>Video (optional)</label>
+              <input
+                type="file"
+                accept="video/*"
+                className={inputClass}
+                onChange={(e) => handleFileChange(e, setVideo)}
+              />
+              {video.preview && <video src={video.preview} controls className="mt-2 w-full rounded-xl h-[30vh]" />}
+            </div>
 
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Discount"
-          value={discount}
-          onChange={(e) => setDiscount(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Whatsapp"
-          value={whatsapp}
-          onChange={(e) => setWhatsapp(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Region"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Town"
-          value={town}
-          onChange={(e) => setTown(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        <select
-          value={category._id || ""}
-          onChange={(e) => setCategory(categories.find((cat) => cat._id === e.target.value))}
-          className="block w-full border rounded p-2"
-        >
-          <option value="">Select Category</option>
-          {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-        <input
-          type="text"
-          placeholder="Condition"
-          value={condition}
-          onChange={(e) => setCondition(e.target.value)}
-          className="block w-full border rounded p-2"
-        />
-        {error && <p className="text-red-500">{error}</p>}
-        <button
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className={`w-full bg-blue-500 text-white rounded p-2 ${
-            isLoading && "opacity-50"
-          }`}
-        >
-          {isLoading ? "Submitting..." : id ? "Update Post" : "Create Post"}
-        </button>
+            <div>
+              <label className={labelClass}>Name</label>
+              <input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Price</label>
+              <input
+                type="text"
+                placeholder="Price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Discount</label>
+              <input
+                type="text"
+                placeholder="Discount"
+                value={discount}
+                onChange={(e) => setDiscount(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Phone</label>
+              <input
+                type="text"
+                placeholder="Phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>WhatsApp</label>
+              <input
+                type="text"
+                placeholder="Whatsapp"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Location</label>
+              <input
+                type="text"
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Region</label>
+              <input
+                type="text"
+                placeholder="Region"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Town</label>
+              <input
+                type="text"
+                placeholder="Town"
+                value={town}
+                onChange={(e) => setTown(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Description</label>
+              <textarea
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={4}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Category</label>
+              <select
+                value={category._id || ""}
+                onChange={(e) => setCategory(categories.find((cat) => cat._id === e.target.value))}
+                className={inputClass}
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Condition</label>
+              <input
+                type="text"
+                placeholder="Condition"
+                value={condition}
+                onChange={(e) => setCondition(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            {error && <p className="text-sm font-medium text-red-600">{error}</p>}
+            <Button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              variant="primary"
+              size="lg"
+              className="w-full"
+            >
+              {isLoading ? "Submitting..." : id ? "Update Post" : "Create Post"}
+            </Button>
+          </div>
+        </Card>
       </div>
-    </div>
+    </Container>
   );
 };
 

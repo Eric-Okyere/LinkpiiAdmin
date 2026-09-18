@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
+import { Container, PageHeader, Card, Loader, EmptyState } from '../components/ui';
 
 const ApprovedCars = () => {
   const [approvedProducts, setApprovedProducts] = useState([]);
@@ -28,75 +27,37 @@ const ApprovedCars = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-
-  const myStylesh1 = 'font-bold font-mono';
-  const Spanstyle = 'text-black  font-serif';
-
-
-
-
   return (
-    <div>
-    <div className='pt-20'>
-   
+    <Container>
+      <PageHeader title="Approved Cars" total={approvedProducts.length} totalLabel="Total Approved" />
 
+      {loading ? (
+        <Loader />
+      ) : approvedProducts.length === 0 ? (
+        <EmptyState title="No approved cars yet" subtitle="Approved driver listings will appear here." />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {approvedProducts.map((item) => (
+            <Card hover key={item._id} className="flex flex-col p-5">
+              <div className="flex gap-2">
+                <img src={item.driverpic} className="h-28 w-1/2 rounded-xl object-cover" alt="Driver" />
+                <img src={item.carpic} className="h-28 w-1/2 rounded-xl object-cover" alt="Car" />
+              </div>
 
-    </div>
-    {loading ? (
-    <div className="flex items-center justify-center w-full h-full">
-    <BeatLoader color={'#36D7B7'} loading={loading} />
-  </div>
-    ) : (
-      // Display the fetched data
-      approvedProducts.map((item) => (
-       <>
-        
-        <div key={item._id} className='bg-[#f2f2f2] drop-shadow-2xl mb-10 mr-10 ml-10'>
-          <div className='p-5 md:flex'>
-            <div className='mt-10 p-5 md:flex'>
-              <div className='flex justify-center'>
-                <img src={item.driverpic} className='w-80 h-52 rounded-lg mr-5 mb-5' alt='image' />
+              <div className="mt-4 space-y-1 text-sm text-ink-600">
+                <p className="font-display text-base font-semibold text-ink-900">{item.name}</p>
+                <p>Size: {item.size}</p>
+                <a href={`tel:${item.phone}`} className="hover:text-brand-600 hover:underline">Phone: {item.phone}</a>
+                <p>{item.description}</p>
+                <p>Region: {item.region}</p>
+                <p>Town: {item.town}</p>
+                <p className="text-xs text-ink-400">Joined {formatDate(item.dateCreated)}</p>
               </div>
-              <div className='flex justify-center'>
-                <img src={item.carpic} className='w-80 mb-5 h-52 rounded-lg mr-5' alt='image' />
-              </div>
-              <div className='justify-center items-center'>
-                <h1 className={myStylesh1}>
-                  Name: <span className={Spanstyle}>{item.name}</span>
-                </h1>
-                <h1 className={myStylesh1}>
-                  Size: <span className={Spanstyle}>{item.size}</span>
-                </h1>
-               
-                <h1 className={myStylesh1}>
-                  Phone: <span className={Spanstyle}>{item.phone}</span>
-                </h1>
-                <h1 className={myStylesh1}>
-                  Description: <span className={Spanstyle}>{item.description}</span>
-                </h1>
-                <h1 className={myStylesh1}>
-                  Region: <span className={Spanstyle}>{item.region}</span>
-                </h1>
-                <h1 className={myStylesh1}>
-                  Town: <span className={Spanstyle}>{item.town}</span>
-                </h1>
-                
-                <h1 className={myStylesh1}>
-                  Date: <span className={Spanstyle}>{formatDate(item.dateCreated)}</span>
-                </h1>
-                
-              </div>
-              
-            </div>
-          
-          </div>
-        
-
+            </Card>
+          ))}
         </div>
-        </> 
-      ))
-    )}
-  </div>
+      )}
+    </Container>
   );
 };
 

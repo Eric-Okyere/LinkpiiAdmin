@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle } from 'react-icons/fa';
+import {
+  Container,
+  PageHeader,
+  SearchInput,
+  Card,
+  Badge,
+  Button,
+  Loader,
+  EmptyState,
+  ConfirmModal,
+} from './ui';
 
 const AllUsers = () => {
   const [data, setData] = useState([]);
@@ -14,8 +23,6 @@ const AllUsers = () => {
   const [confirmationPopup, setConfirmationPopup] = useState({ visible: false, action: null, userId: null });
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
-
-  const myStyle = "font-bold mx-4 text-black font-uniquifier text-lg";
 
   const apiGet = () => {
     fetch(`${baseURL}getUsers`)
@@ -61,7 +68,7 @@ const AllUsers = () => {
   };
 
   const handleClear = () => {
-    setSearchTerm("");
+    setSearchTerm('');
     setProductFilter(data);
   };
 
@@ -114,7 +121,7 @@ const AllUsers = () => {
   };
 
   const sendSMS = (phone) => {
-    if (!phone) return alert("Phone number is missing or invalid.");
+    if (!phone) return alert('Phone number is missing or invalid.');
     const message = encodeURIComponent( "Welcome to Linkpii! It helps you post video and pictures of your work, products or shop. " +
     "You can also order a KIA driver by negotiation to convey your products. It helps you rent a room, book a hotel or buy an estate. " +
     "Our main aim is to promote agriculture. Can we know what you want to buy, sell or services you provide? " +
@@ -123,73 +130,84 @@ const AllUsers = () => {
     window.location.href = `sms:${phone}?&body=${message}`;
   };
 
+  const confirmCopy = {
+    delete: { title: 'Delete this user?', message: 'This removes the account permanently. This cannot be undone.', confirmLabel: 'Delete', danger: true },
+    report: { title: 'Report this user?', message: 'This will flag the account as reported.', confirmLabel: 'Report' },
+    rectify: { title: 'Clear this report?', message: 'This removes the report flag from the account.', confirmLabel: 'Clear report' },
+    whatsapp: { title: 'Message on WhatsApp?', message: "This opens WhatsApp with Linkpii's welcome message pre-filled.", confirmLabel: 'Open WhatsApp' },
+    sms: { title: 'Send an SMS?', message: "This opens your SMS app with Linkpii's welcome message pre-filled.", confirmLabel: 'Send SMS' },
+    edit: { title: 'Edit this user?', message: 'You will be taken to the edit screen.', confirmLabel: 'Continue' },
+    password: { title: 'Reset this user’s password?', message: 'You will be taken to the password screen.', confirmLabel: 'Continue' },
+  };
+  const activeCopy = confirmCopy[confirmationPopup.action] || {};
+
   return (
-    <div>
-      <div className='flex justify-between mx-8 pt-16'>
-        <h1 className='font-bold font-uniquifier'>ALL USERS</h1>
-        <h2 className='bg-[#f2f2f2] font-bold rounded-lg p-4 font-uniquifier'>Total Users: {productCount}</h2>
-      </div>
-      <div className="mx-8 mt-4">
-        <input
-          type="text"
-          placeholder="Search by name or phone number"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-300 rounded-lg w-full"
-        />
-        <div className='flex justify-between'>
-          <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2 ml-2 rounded-lg">Search</button>
-          <button onClick={handleClear} className="bg-red-500 text-white px-4 py-2 ml-2 rounded-lg">Clear</button>
-        </div>
-      </div>
-      <div className="flex flex-wrap justify-around">
-        {loading ? (
-          <div className="flex items-center justify-center w-full h-full">
-            <BeatLoader color={'#36D7B7'} loading={loading} />
-          </div>
-        ) : (
-          productFilter.map((item) => (
-            <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item._id}>
-              <div className="flex items-center justify-center pt-1">
-                {item.avatar ? <img width={40} height={40} className='rounded-full' src={item.avatar} alt="avatar" /> : <FaUserCircle size={40} className='text-center' />}
-              </div>
-              <div className='flex'>
-                <Link to={`/user-detail/${item._id}`}>
-                  <h3 className={`${myStyle} text-blue-600`}>{item.name} {item.lastname}</h3>
-                </Link>
-              </div>
-              <a href={`mailto:${item.email}`} className={`${myStyle} line-clamp-2 break-words -mt-4  hover:underline`}>{item.email}</a>
-              <a href={`tel:${item.phone}`} className={`${myStyle} -mt-4  hover:underline`}>📞 {item.phone}</a>
-              <h3 className={`${myStyle} -mt-4`}>🗓️{formatDate(item.dateCreated)}</h3>
-              <div className="grid grid-cols-3 gap-2 mt-2">
-                <button onClick={() => handleConfirmation('whatsapp', item.phone)} className="bg-green-500 text-xs text-white py-1 px-2 rounded">WhatsApp</button>
-                <button onClick={() => handleConfirmation('sms', item.phone)} className="bg-purple-500 text-xs text-white py-1 px-2 rounded">SMS</button>
-                <button onClick={() => handleConfirmation('edit', item._id)} className="bg-black text-xs text-white py-1 px-2 rounded">Edit</button>
+    <Container>
+      <PageHeader title="All Users" total={productCount} totalLabel="Total Users" />
+
+      <SearchInput
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        onSearch={handleSearch}
+        onClear={handleClear}
+        placeholder="Search by name, email or phone number"
+        className="mb-6"
+      />
+
+      {loading ? (
+        <Loader />
+      ) : productFilter.length === 0 ? (
+        <EmptyState title="No users found" subtitle="Try a different search term." />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {productFilter.map((item) => (
+            <Card hover key={item._id} className="flex flex-col items-center p-5 text-center">
+              {item.avatar ? (
+                <img width={56} height={56} className="h-14 w-14 rounded-full object-cover" src={item.avatar} alt="avatar" />
+              ) : (
+                <FaUserCircle size={56} className="text-ink-300" />
+              )}
+              <Link to={`/user-detail/${item._id}`} className="mt-3 font-display font-semibold text-ink-900 hover:text-brand-600">
+                {item.name} {item.lastname}
+              </Link>
+              <a href={`mailto:${item.email}`} className="mt-1 line-clamp-1 break-all text-sm text-ink-500 hover:underline">
+                {item.email}
+              </a>
+              <a href={`tel:${item.phone}`} className="mt-0.5 text-sm text-ink-500 hover:underline">
+                📞 {item.phone}
+              </a>
+              <p className="mt-1 text-xs text-ink-400">Joined {formatDate(item.dateCreated)}</p>
+              {item.report && (
+                <Badge tone="danger" className="mt-2">Reported</Badge>
+              )}
+
+              <div className="mt-4 grid w-full grid-cols-3 gap-2">
+                <Button size="sm" variant="primary" className="!bg-emerald-600 hover:!bg-emerald-700" onClick={() => handleConfirmation('whatsapp', item.phone)}>WhatsApp</Button>
+                <Button size="sm" variant="outline" onClick={() => handleConfirmation('sms', item.phone)}>SMS</Button>
+                <Button size="sm" variant="secondary" onClick={() => handleConfirmation('edit', item._id)}>Edit</Button>
                 {!item.report ? (
-                  <button onClick={() => handleConfirmation('report', item._id)} className="bg-blue-500 text-xs text-white py-1 px-2 rounded">Report</button>
+                  <Button size="sm" variant="outline" onClick={() => handleConfirmation('report', item._id)}>Report</Button>
                 ) : (
-                  <button onClick={() => handleConfirmation('rectify', item._id)} className="bg-red-500 text-xs text-white py-1 px-2 rounded">Rectify</button>
+                  <Button size="sm" variant="danger" onClick={() => handleConfirmation('rectify', item._id)}>Rectify</Button>
                 )}
-                <button onClick={() => handleConfirmation('password', item._id)} className="bg-green-700 text-xs text-white py-1 px-2 rounded">Password</button>
-                <button onClick={() => handleConfirmation('delete', item._id)} className="bg-red-700 text-xs text-white py-1 px-2 rounded">Delete</button>
+                <Button size="sm" variant="outline" onClick={() => handleConfirmation('password', item._id)}>Password</Button>
+                <Button size="sm" variant="danger" onClick={() => handleConfirmation('delete', item._id)}>Delete</Button>
               </div>
             </Card>
-          ))
-        )}
-      </div>
-
-      {confirmationPopup.visible && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded shadow-lg">
-            <p>Are you sure you want to proceed with this action?</p>
-            <div className="flex justify-center mt-4">
-              <button onClick={confirmAction} className="bg-red-500 text-white px-4 py-2 mr-4 rounded">Yes</button>
-              <button onClick={() => setConfirmationPopup({ visible: false, action: null, userId: null })} className="bg-gray-500 text-white px-4 py-2 rounded">No</button>
-            </div>
-          </div>
+          ))}
         </div>
       )}
-    </div>
+
+      <ConfirmModal
+        open={confirmationPopup.visible}
+        title={activeCopy.title}
+        message={activeCopy.message}
+        confirmLabel={activeCopy.confirmLabel}
+        danger={confirmationPopup.action === 'delete'}
+        onConfirm={confirmAction}
+        onCancel={() => setConfirmationPopup({ visible: false, action: null, userId: null })}
+      />
+    </Container>
   );
 };
 

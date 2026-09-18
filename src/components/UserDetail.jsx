@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
@@ -6,6 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 import { FaWhatsapp } from "react-icons/fa";
+import { Container, Card, Badge, Button, Loader, EmptyState } from './ui';
 
 
 
@@ -23,7 +24,7 @@ const UserDetail = () => {
   const [isAvatarSelected, setIsAvatarSelected] = useState(false);
   const [isPictureSelected, setIsPictureSelected] = useState(false);
   const [isGHBackSelected, setIsGHBackSelected] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);  
+  const [isLoading, setIsLoading] = useState(false);
   const usageData = [
   { name: 'Initial', usage: 0 },
   { name: 'Current', usage: user?.platfUsed || 0 }
@@ -141,129 +142,148 @@ const UserDetail = () => {
 };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <Container>
+        <Loader />
+      </Container>
+    );
   }
 
   return (
-  <div className="min-h-screen bg-gray-100 p-4 md:p-8, pt-10">
-    {user ? (
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 bg-white shadow-xl rounded-xl overflow-hidden">
-        {/* Left Column – User Info */}
-        <div className="p-6 md:p-10 bg-white">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            {user.name} {user.lastname}
-          </h1>
-          <p className="text-gray-600 mb-1">📧 <strong>Email:</strong> {user.email}</p>
-          <p className="text-gray-600 mb-1">📞 <strong>Phone:</strong> {user.phone}</p>
+    <Container>
+      {user ? (
+        <Card className="grid grid-cols-1 overflow-hidden md:grid-cols-2">
+          {/* Left Column – User Info */}
+          <div className="p-6 md:p-10">
+            <h1 className="font-display text-2xl font-bold text-ink-900 md:text-3xl">
+              {user.name} {user.lastname}
+            </h1>
+            <p className="mt-3 text-sm text-ink-600">📧 <strong className="text-ink-800">Email:</strong> {user.email}</p>
+            <p className="mt-1 text-sm text-ink-600">📞 <strong className="text-ink-800">Phone:</strong> {user.phone}</p>
             {user.phone && (
-          <a
-            href={`https://wa.me/${formatPhoneForWhatsApp(user.phone)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow transition"
-          >
-            <FaWhatsapp size={20} /> Chat on WhatsApp
-          </a>
-        )}
-          <p className="text-gray-600 mb-1">
-            ✅ <strong>Verified:</strong> {user.verified ? <span className="text-green-600">Yes</span> : <span className="text-red-500">No</span>}
-          </p>
-          <p className="text-gray-600 mb-1">
-            🗓️ <strong>Date Created:</strong> {new Date(user.dateCreated).toLocaleDateString()}
-          </p>
-          <p className="text-gray-600 mb-6">
-            🕓 <strong>Last Seen:</strong>{' '}
-            {new Date(user.lastSeen || user.dateCreated).toLocaleString('en-US', {
-              weekday: 'short',
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-              hour12: true,
-            })}
-          </p>
+              <Button
+                as="a"
+                href={`https://wa.me/${formatPhoneForWhatsApp(user.phone)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 !bg-emerald-600 hover:!bg-emerald-700"
+              >
+                <FaWhatsapp size={18} /> Chat on WhatsApp
+              </Button>
+            )}
+            <p className="mt-3 text-sm text-ink-600">
+              ✅ <strong className="text-ink-800">Verified:</strong>{' '}
+              {user.verified ? <Badge tone="success">Yes</Badge> : <Badge tone="danger">No</Badge>}
+            </p>
+            <p className="mt-2 text-sm text-ink-600">
+              🗓️ <strong className="text-ink-800">Date Created:</strong> {new Date(user.dateCreated).toLocaleDateString()}
+            </p>
+            <p className="mb-6 mt-2 text-sm text-ink-600">
+              🕓 <strong className="text-ink-800">Last Seen:</strong>{' '}
+              {new Date(user.lastSeen || user.dateCreated).toLocaleString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+              })}
+            </p>
 
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">📊 Platform Usage</h2>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={usageData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="usage" fill="#4f46e5" />
-              </BarChart>
-            </ResponsiveContainer>
-            <p className="mt-2 text-gray-600">Total times user accessed platform: <strong>{user.platfUsed}</strong></p>
+            <Card className="mb-6 p-4">
+              <h2 className="mb-2 font-display text-lg font-bold text-ink-900">📊 Platform Usage</h2>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={usageData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="usage" fill="#4f46e5" />
+                </BarChart>
+              </ResponsiveContainer>
+              <p className="mt-2 text-sm text-ink-600">
+                Total times user accessed platform: <strong className="text-ink-900">{user.platfUsed}</strong>
+              </p>
+            </Card>
+
+            {/* Upload Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-ink-700">Choose Profile Pic</label>
+                <input
+                  type="file"
+                  onChange={handleAvatarChange}
+                  accept="image/*"
+                  className="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-100 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink-700 hover:file:bg-ink-200"
+                />
+                {isAvatarSelected && (
+                  <img src={avatarPreview} alt="Avatar Preview" className="mt-2 w-40 rounded-lg object-cover" />
+                )}
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-ink-700">Front GH Card</label>
+                <input
+                  type="file"
+                  onChange={handlePictureChange}
+                  accept="image/*"
+                  className="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-100 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink-700 hover:file:bg-ink-200"
+                />
+                {isPictureSelected && (
+                  <img src={picturePreview} alt="Picture Preview" className="mt-2 w-40 rounded-lg object-cover" />
+                )}
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-ink-700">Back GH Card</label>
+                <input
+                  type="file"
+                  onChange={handleGHbackChange}
+                  accept="image/*"
+                  className="block w-full text-sm text-ink-600 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-100 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink-700 hover:file:bg-ink-200"
+                />
+                {isGHBackSelected && (
+                  <img src={ghBackPreview} alt="Picture Preview" className="mt-2 w-40 rounded-lg object-cover" />
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading || !isAvatarSelected || !isPictureSelected}
+              >
+                {isLoading ? 'Uploading...' : 'Upload for verification'}
+              </Button>
+            </form>
           </div>
 
-          {/* Upload Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block font-medium text-gray-700 mb-1">Choose Profile Pic</label>
-              <input type="file" onChange={handleAvatarChange} accept="image/*" className="block w-full" />
-              {isAvatarSelected && (
-                <img src={avatarPreview} alt="Avatar Preview" className="mt-2 rounded-md w-40" />
-              )}
-            </div>
-            <div>
-              <label className="block font-medium text-gray-700 mb-1">Front GH Card</label>
-              <input type="file" onChange={handlePictureChange} accept="image/*" className="block w-full" />
-              {isPictureSelected && (
-                <img src={picturePreview} alt="Picture Preview" className="mt-2 rounded-md w-40" />
-              )}
-            </div>
+          {/* Right Column – Pictures */}
+          <div className="flex flex-col items-center justify-start gap-4 bg-ink-50 p-6 md:p-10">
+            {user.avatar ? (
+              <img src={user.avatar} alt="Avatar" className="h-40 w-40 rounded-2xl object-cover shadow-card" />
+            ) : (
+              <p className="text-sm font-semibold text-red-500">No profil pic available</p>
+            )}
 
-            <div>
-              <label className="block font-medium text-gray-700 mb-1">Back GH Card</label>
-              <input type="file" onChange={handleGHbackChange} accept="image/*" className="block w-full" />
-              {isGHBackSelected && (
-                <img src={ghBackPreview} alt="Picture Preview" className="mt-2 rounded-md w-40" />
-              )}
-            </div>
+            {user.picture ? (
+              <img src={user.picture} alt="Picture" className="w-full max-w-sm rounded-2xl shadow-card" />
+            ) : (
+              <p className="text-sm font-semibold text-red-500">No ID picture available</p>
+            )}
 
-            <button
-              type="submit"
-              className={`w-full mt-2 py-2 rounded-lg font-semibold text-white transition ${
-                isLoading || !isAvatarSelected || !isPictureSelected
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-              disabled={isLoading || !isAvatarSelected || !isPictureSelected}
-            >
-              {isLoading ? 'Uploading...' : 'Upload for verification'}
-            </button>
-          </form>
-        </div>
-
-        {/* Right Column – Pictures */}
-        <div className="p-6 md:p-10 bg-gray-50 flex flex-col items-center justify-start gap-4">
-          {user.avatar ? (
-            <img src={user.avatar} alt="Avatar" className="w-40 h-40 rounded-lg object-cover shadow-md" />
-          ) : (
-            <p className="text-red-500">No profil pic available</p>
-          )}
-
-          {user.picture ? (
-            <img src={user.picture} alt="Picture" className="w-full max-w-sm rounded-lg shadow-md" />
-          ) : (
-            <p className="text-red-500">No ID picture available</p>
-          )}
-
-          {user.ghback ? (
-            <img src={user.ghback} alt="Background" className="w-full max-w-sm rounded-lg shadow-md" />
-          ) : (
-            <p className="text-red-500">No picture available</p>
-          )}
-        </div>
-      </div>
-    ) : (
-      <div className="text-center mt-20 text-red-500 font-semibold">User not found</div>
-    )}
-  </div>
-);
+            {user.ghback ? (
+              <img src={user.ghback} alt="Background" className="w-full max-w-sm rounded-2xl shadow-card" />
+            ) : (
+              <p className="text-sm font-semibold text-red-500">No picture available</p>
+            )}
+          </div>
+        </Card>
+      ) : (
+        <EmptyState title="User not found" />
+      )}
+    </Container>
+  );
 
 };
 

@@ -1,12 +1,10 @@
-// Import React, useState, useEffect, and other necessary components
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import baseURL from '../assets/baseURL';
 import axios from 'axios'; // Import Axios for HTTP requests
-import { BeatLoader } from 'react-spinners';
-import { Card } from 'flowbite-react';
+import { Container, PageHeader, Card, Button, Loader, EmptyState, ConfirmModal } from '../components/ui';
 
 const Advert = () => {
   const [advertImages, setAdvertImages] = useState([]);
@@ -14,10 +12,6 @@ const Advert = () => {
   const [productCount, setProductCount] = useState(0);
   const [deleteId, setDeleteId] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State for delete confirmation
-  
-  // Define your styles or classNames here
-  const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
-
 
   const settings = {
     dots: true,
@@ -87,71 +81,72 @@ const Advert = () => {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto pt-16 px-4 sm:px-6 lg:px-8">
+    <Container>
+      <PageHeader title="Adverts" total={productCount} totalLabel="Total Adverts" />
+
       {loading ? (
-        <div className="flex items-center justify-center w-full h-full">
-          <BeatLoader color={'#36D7B7'} loading={loading} />
-        </div>
+        <Loader />
+      ) : advertImages.length === 0 ? (
+        <EmptyState title="No adverts yet" subtitle="Post a new advert to see it here." />
       ) : (
-        <div >
-        
-        <Slider {...settings}>
+        <>
+          <Card className="mb-8 overflow-hidden p-2">
+            <Slider {...settings}>
+              {advertImages.map((image, index) => (
+                <div key={index}>
+                  <img
+                    src={image.picture}
+                    alt={`Slide ${index + 1}`}
+                    className="h-96 w-full rounded-xl object-cover"
+                  />
+                </div>
+              ))}
+            </Slider>
+          </Card>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {advertImages.map((image, index) => (
-              <div key={index}>
+              <Card hover key={index} className="flex gap-4 p-4">
                 <img
+                  width={112}
+                  height={96}
                   src={image.picture}
-                  alt={`Slide ${index + 1}`}
-                  className="w-full h-96 rounded"
+                  alt={image.name}
+                  className="h-24 w-28 flex-shrink-0 rounded-xl object-cover"
                 />
-              </div>
+                <div className="flex flex-1 flex-col justify-between">
+                  <div>
+                    <h3 className="font-display font-semibold text-ink-900">{image.name}</h3>
+                    <p className="mt-0.5 text-sm text-ink-500">{image?.author}</p>
+                    <p className="text-sm text-ink-500">{image?.phone}</p>
+                    <p className="text-sm text-ink-500">{image?.whatsapp}</p>
+                    <p className="mt-1 text-xs text-ink-400">{formatDate(image.dateCreated)}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    className="mt-3 self-start"
+                    onClick={() => handleDelete(image._id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </Card>
             ))}
-          </Slider>
-
-
-
-
-
-          <h1 className='text-center text-lg pt-10 font-bold font-uniquifier'>Total Advert: {productCount}</h1>
-
-          <div className="flex flex-wrap">
-  {advertImages.map((image, index) => (
-    <div key={index} className="w-full md:w-1/3 lg:w-1/3 px-4 mb-4">
-      <Card className="flex flex-row bg-[#f2f2f2]">
-        <img width={250} height={100} src={image.picture} alt="image 1" />
-        <div className="flex flex-col justify-center ml-4">
-          <h5 className={`${myStyle}, text-2xl`}>{image.name}</h5>
-          <h5 className={`${myStyle}, text-2xl`}>{image?.author}</h5>
-          <h5 className={`${myStyle}, text-2xl`}>{image?.phone}</h5>
-          <h5 className={`${myStyle}, text-2xl`}>{image?.whatsapp}</h5>
-          <h3 className={myStyle}>{formatDate(image.dateCreated)}</h3>
-        </div>
-        <button
-          onClick={() => handleDelete(image._id)}
-          className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-        >
-          Delete
-        </button>
-      </Card>
-    </div>
-  ))}
-</div>
-
-        </div>
-      )}
-
-      {/* Delete Confirmation Dialog */}
-      {showDeleteConfirmation && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded shadow-md">
-            <p>Are you sure you want to delete this image?</p>
-            <div className="flex justify-between mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded mr-2">Confirm</button>
-              <button onClick={() => setShowDeleteConfirmation(false)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-            </div>
           </div>
-        </div>
+        </>
       )}
-    </div>
+
+      <ConfirmModal
+        open={showDeleteConfirmation}
+        title="Delete this advert?"
+        message="This removes the advert image permanently. This cannot be undone."
+        confirmLabel="Delete"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteConfirmation(false)}
+      />
+    </Container>
   );
 };
 

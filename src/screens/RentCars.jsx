@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
-
-
+import {
+  Container,
+  PageHeader,
+  Card,
+  Badge,
+  Button,
+  Loader,
+  EmptyState,
+  ConfirmModal,
+} from '../components/ui';
 
 const Equipment = () => {
   const [data, setData] = useState([]);
@@ -12,8 +18,6 @@ const Equipment = () => {
   const [productFilter, setProductFilter] = useState([]);
   const [productCount, setProductCount] = useState(0); // New state for product count
   const [deleteId, setDeleteId] = useState(null); // State for tracking delete confirmation
-
-  const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
 
   const apiGet = () => {
     fetch(`${baseURL}rentcar`)
@@ -111,80 +115,71 @@ const Equipment = () => {
   };
 
   return (
-    <div>
-      <div className='flex justify-between mx-8 pt-16'>
-        <h1 className='font-bold'>ALL CAR RENT</h1>
-        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Car Rent: {productCount}</h2>
-      </div>
-      <div className="flex flex-wrap justify-around ">
-        {loading ? (
-          <div className="flex items-center justify-center w-full h-full">
-            <BeatLoader color={'#36D7B7'} loading={loading} />
-          </div>
-        ) : (
-          productFilter.map((item) => (
-            <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item.id}>
-              <img width={500} height={500} src={item.picture} alt="image 1" />
-              <img width={500} height={500} src={item.picturesec} alt="image 1" />
-              <h5 className={`${myStyle}, text-2xl`}>
-                {item.name}
-              </h5>
-              <h3 className={myStyle}> View:{item.views}</h3>
-              <h3 className={myStyle}> Gh₵{item.price}</h3>
-              <h3 className={myStyle}>{item.description}</h3>
-              <h3 className={myStyle}>{item.region}</h3>
-              <h3 className={myStyle}>{item.town}</h3>
-              <h3 className={myStyle}>Phone:{item.phone}</h3>
-              <h3 className={myStyle}>Whatsapp:{item.whatsapp}</h3>
-              <h3 className={myStyle}>{item.location}</h3>
-              <h3 className={myStyle}>Author:{item.author.name}</h3>
-              <h3 className={myStyle}>
-                {formatDate(item.dateCreated)}
-              </h3>
+    <Container>
+      <PageHeader title="All Car Rentals" total={productCount} totalLabel="Total Car Rentals" />
 
-              <div className="mt-4 space-y-4">
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
+      {loading ? (
+        <Loader />
+      ) : productFilter.length === 0 ? (
+        <EmptyState title="No car rentals found" subtitle="Rental car listings will appear here once submitted." />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {productFilter.map((item) => (
+            <Card hover key={item.id} className="flex flex-col p-5">
+              <div className="flex gap-2">
+                <img width={500} height={500} src={item.picture} alt="Car" className="h-28 w-1/2 rounded-xl object-cover" />
+                <img width={500} height={500} src={item.picturesec} alt="Car" className="h-28 w-1/2 rounded-xl object-cover" />
+              </div>
+
+              <p className="mt-4 font-display text-base font-semibold text-ink-900">{item.name}</p>
+
+              <div className="mt-1 space-y-1 text-sm text-ink-600">
+                <p>Views: {item.views}</p>
+                <p className="font-semibold text-brand-600">GH₵{item.price}</p>
+                <p>{item.description}</p>
+                <p>{item.region}</p>
+                <p>{item.town}</p>
+                <a href={`tel:${item.phone}`} className="block hover:text-brand-600 hover:underline">Phone: {item.phone}</a>
+                <a
+                  href={`https://wa.me/${item.whatsapp}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block hover:text-brand-600 hover:underline"
                 >
-                  Delete
-                </button>
+                  WhatsApp: {item.whatsapp}
+                </a>
+                <p>{item.location}</p>
+                <p>Author: {item.author.name}</p>
+                <p className="text-xs text-ink-400">Joined {formatDate(item.dateCreated)}</p>
+              </div>
 
+              <div className="mt-3 flex flex-wrap gap-2">
+                {item.approved && <Badge tone="success">Approved</Badge>}
+                {item.boost && <Badge tone="brand">Boosted</Badge>}
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 gap-2">
+                <Button size="sm" variant="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
                 {!item.approved && (
-                  <button
-                    onClick={() => handleUpdateApproval(item.id)}
-                    className="bg-green-500 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Approve
-                  </button>
+                  <Button size="sm" variant="primary" onClick={() => handleUpdateApproval(item.id)}>Approve</Button>
                 )}
-                {/* {!item.boost && ( */}
-                  <button
-                    onClick={() => handleUpdateBoost(item.id)}
-                    className="bg-blue-600 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Boost
-                  </button>
-                {/* )} */}
+                <Button size="sm" variant="accent" onClick={() => handleUpdateBoost(item.id)}>Boost</Button>
               </div>
             </Card>
-          ))
-        )}
-      </div>
-
-      {/* Delete Confirmation Dialog */}
-      {deleteId && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded shadow-md">
-            <p>Are you sure you want to delete this product?</p>
-            <div className="flex justify-between mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded mr-2">Confirm</button>
-              <button onClick={() => setDeleteId(null)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-            </div>
-          </div>
+          ))}
         </div>
       )}
-    </div>
+
+      <ConfirmModal
+        open={!!deleteId}
+        title="Delete this rental car?"
+        message="This removes the listing permanently. This cannot be undone."
+        confirmLabel="Delete"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
+    </Container>
   );
 };
 

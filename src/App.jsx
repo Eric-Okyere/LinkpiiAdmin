@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import AdminLayout from './components/AdminLayout';
+import Dashboard from './screens/Dashboard';
 import Login from './components/Login';
 import AllCars from './components/AllCars';
 import AllUsers from './components/AllUsers';
@@ -9,14 +10,6 @@ import ApprovedProducts from './screens/ApprovedProducts';
 import ApprovedCars from './screens/ApprovedCars';
 import Advert from './screens/Advert';
 import PostAdvert from './screens/PostAdvert';
-import Airtel from './components/codes/Airtel';
-import AirtelCode from './screens/AirtelCode';
-import MTN from './components/codes/MTN';
-import MTNPost from './screens/MTNPost';
-import Vodafone from './components/codes/Vodafone';
-import VodafonePost from './screens/VodafonePost';
-import Emergency from './components/codes/Emergency';
-import EmergencyPost from './screens/EmergencyPost';
 import Fashion from './components/Fashion';
 import ApprovedFashion from './screens/AprrovedFashion';
 import AllMechanics from './components/AllMechanics';
@@ -44,6 +37,7 @@ import FashionPost from './components/FashionPost';
 import HotProducts from './components/HotProducts';
 import AgricPost from './components/AgricPost';
 import Food from './screens/Food';
+import Detail from './components/Detail';
 
 const SESSION_DURATION = 60 * 60 * 1000; 
 
@@ -77,29 +71,27 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('loginTime');
+    setIsLoggedIn(false);
+  };
+
   return (
     <>
       {isLoggedIn ? (
-        <>
-          <Navbar />
+        <AdminLayout onLogout={handleLogout}>
           <Routes>
             <Route path="/agric" element={<AllProducts />} />
             <Route path="/approved" element={<ApprovedProducts />} />
-            <Route path="/" element={<Fashion />} />
+            <Route path="/" element={<AllUsers />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/fashion" element={<Fashion />} />
             <Route path="/approvedfashion" element={<ApprovedFashion />} />
             <Route path="/cars" element={<AllCars />} />
             <Route path="/users" element={<AllUsers />} />
             <Route path="/approvedcars" element={<ApprovedCars />} />
             <Route path="/advert" element={<Advert />} />
             <Route path="/postadvert" element={<PostAdvert />} />
-            <Route path="/airtel" element={<Airtel />} />
-            <Route path="/airtelcode" element={<AirtelCode />} />
-            <Route path="/mtn" element={<MTN />} />
-            <Route path="/mtnpost" element={<MTNPost />} />
-            <Route path="/vodafone" element={<Vodafone />} />
-            <Route path="/vodafonepost" element={<VodafonePost />} />
-            <Route path="/emergency" element={<Emergency />} />
-            <Route path="/emergencypost" element={<EmergencyPost />} />
             <Route path="/mechanics" element={<AllMechanics />} />
             <Route path="/calls" element={<Call />} />
             <Route path="/services" element={<Services />} />
@@ -123,9 +115,9 @@ function App() {
             <Route path="/fashionedit/:id" element={<FashionPost />} />
             <Route path="/agricedit/:id" element={<AgricPost />} />
             <Route path="/food" element={<Food />} />
-           
+            <Route path="/detail/:id" element={<Detail />} />
           </Routes>
-        </>
+        </AdminLayout>
       ) : (
         <Login onLogin={handleLogin} />
       )}

@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
 import { Link } from 'react-router-dom';
-
+import {
+  Container,
+  PageHeader,
+  Card,
+  Badge,
+  Button,
+  Loader,
+  EmptyState,
+  ConfirmModal,
+} from '../components/ui';
 
 const Buildings = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productFilter, setProductFilter] = useState([]);
   const [productCount, setProductCount] = useState(0); // New state for product count
-  const [deleteId, setDeleteId] = useState(null); // State for tracking delete confirmation
-  const [hotId, setHotId] = useState(null)
-
-
-
-  const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
+  const [confirmationPopup, setConfirmationPopup] = useState({ visible: false, action: null, id: null });
 
   const apiGet = () => {
     fetch(`${baseURL}buildings`)
@@ -55,21 +57,15 @@ const Buildings = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleDelete = (id) => {
-    // Set the id of the item to be deleted
-    setDeleteId(id);
-  };
-
   const confirmDelete = () => {
+    const { id } = confirmationPopup;
     // Perform the deletion
-    axios.delete(`${baseURL}buildings/${deleteId}`)
+    axios.delete(`${baseURL}buildings/${id}`)
       .then((res) => {
         // Filter out the deleted item from the product list
-        const updatedProducts = productFilter.filter((item) => item.id !== deleteId);
+        const updatedProducts = productFilter.filter((item) => item.id !== id);
         setProductCount(productCount - 1);
         setProductFilter(updatedProducts);
-        // Reset the deleteId state after deletion
-        setDeleteId(null);
       })
       .catch((error) => console.log(error));
   };
@@ -113,145 +109,110 @@ const Buildings = () => {
     }
   };
 
-
-   const confirmHot = async () => {
+  const confirmHot = async () => {
+    const { id } = confirmationPopup;
     try {
-      const response = await axios.put(`${baseURL}buildings/${hotId}/hot`);
+      const response = await axios.put(`${baseURL}buildings/${id}/hot`);
       const updatedProduct = response.data;
-  
+
       setProductFilter((prevProducts) => {
         return prevProducts.map((product) => {
-          if (product.id === hotId) {
+          if (product.id === id) {
             return { ...product, hot: true };
           }
           return product;
         });
       });
-  
+
       console.log('Product sent to hot', updatedProduct);
-      setHotId(null); // close modal
     } catch (error) {
       console.error('Error marking product as hot:', error);
-      setHotId(null); // close modal on error too
     }
   };
 
+  const handleConfirmation = (action, id) => {
+    setConfirmationPopup({ visible: true, action, id });
+  };
+
+  const closeConfirmation = () => setConfirmationPopup({ visible: false, action: null, id: null });
+
+  const confirmAction = async () => {
+    const { action } = confirmationPopup;
+    if (action === 'delete') confirmDelete();
+    else if (action === 'hot') await confirmHot();
+    closeConfirmation();
+  };
+
+  const confirmCopy = {
+    delete: { title: 'Delete this building?', message: 'This removes the listing permanently. This cannot be undone.', confirmLabel: 'Delete', danger: true },
+    hot: { title: 'Mark this building as Hot?', message: 'It will be flagged as a hot item across the site.', confirmLabel: 'Mark Hot' },
+  };
+  const activeCopy = confirmCopy[confirmationPopup.action] || {};
 
   return (
-    <div>
-      <div className='flex justify-between mx-8 pt-16'>
-        <h1 className='font-bold'>ALL BUILDINGS</h1>
-        <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-'>Total Buildings: {productCount}</h2>
-      </div>
-      <div className="flex flex-wrap justify-around ">
-        {loading ? (
-          <div className="flex items-center justify-center w-full h-full">
-            <BeatLoader color={'#36D7B7'} loading={loading} />
-          </div>
-        ) : (
-          productFilter.map((item) => (
-            <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item.id}>
-              <img width={500} height={500} src={item.picture} alt="image 1" />
-              <img width={500} height={500} src={item.picturesec} alt="image 1" />
-              <h5 className={`${myStyle}, text-2xl`}>
-                {item.name}
-              </h5>
-              <h3 className={myStyle}> View:{item.views}</h3>
-              <h3 className={myStyle}> Gh₵{item.price}</h3>
-              <h3 className={myStyle}>{item.description}</h3>
-              <h3 className={myStyle}>{item.region}</h3>
-              <h3 className={myStyle}>{item.town}</h3>
-              <h3 className={myStyle}>Phone:{item.phone}</h3>
-              <h3 className={myStyle}>Whatsapp:{item.whatsapp}</h3>
-              <h3 className={myStyle}>{item.location}</h3>
+    <Container>
+      <PageHeader title="All Buildings" total={productCount} totalLabel="Total Buildings" />
 
-              <Link to={`/user-detail/${item.author._id}`}>
-             {item.author? <h3 className={myStyle}>Author:{item.author.name}</h3>:null} 
-             </Link>
-             <p className="text-lg mb-2 text-red-500 ml-4">
-            {item?.author?.verified ? <p className='text-orange-400'>Verified: Yes</p> : <p className='text-red-500'>Verified: No</p>}
-          </p>
-              <h3 className={myStyle}>
-                {formatDate(item.dateCreated)}
-              </h3>
+      {loading ? (
+        <Loader />
+      ) : productFilter.length === 0 ? (
+        <EmptyState title="No buildings found" subtitle="Building listings will appear here." />
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {productFilter.map((item) => (
+            <Card hover key={item.id} className="overflow-hidden">
+              <div className="grid grid-cols-2 gap-0.5 bg-ink-100">
+                <img width={500} height={500} src={item.picture} alt="image 1" className="h-32 w-full object-cover" />
+                <img width={500} height={500} src={item.picturesec} alt="image 2" className="h-32 w-full object-cover" />
+              </div>
 
-              <div className="mt-4 space-y-4">
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-                >
-                  Delete
-                </button>
+              <div className="space-y-1 p-4 text-sm text-ink-600">
+                <div className="flex items-start justify-between gap-2">
+                  <h5 className="font-display text-base font-bold text-ink-900">{item.name}</h5>
+                  {item.approved ? <Badge tone="success">Approved</Badge> : <Badge tone="warning">Pending</Badge>}
+                </div>
+                <p>View: {item.views}</p>
+                <p className="font-display text-lg font-bold text-brand-600">Gh₵{item.price}</p>
+                <p>{item.description}</p>
+                <p>{item.region}, {item.town}</p>
+                <p>Phone: {item.phone}</p>
+                <p>Whatsapp: {item.whatsapp}</p>
+                <p>{item.location}</p>
 
-                {!item.approved && (
-                  <button
-                    onClick={() => handleUpdateApproval(item.id)}
-                    className="bg-green-500 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Approve
-                  </button>
+                {item.author && (
+                  <Link to={`/user-detail/${item.author._id}`} className="block font-medium text-brand-600 hover:underline">
+                    Author: {item.author.name}
+                  </Link>
                 )}
-                
+                <Badge tone={item?.author?.verified ? 'success' : 'danger'}>
+                  Verified: {item?.author?.verified ? 'Yes' : 'No'}
+                </Badge>
+                <p className="text-xs text-ink-400">{formatDate(item.dateCreated)}</p>
+              </div>
 
-
-                  <button
-                    onClick={() => handleUpdateBoost(item.id)}
-                    className="bg-blue-600 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Boost
-                  </button>
-                {/* )} */}
-
-                   <button
-             onClick={() => setHotId(item.id)}
-            className="bg-black font-uniquifier w-full text-white p-2 rounded"
-          >
-            Hot
-          </button>
-
+              <div className="space-y-2 p-4 pt-0">
+                <Button size="sm" variant="danger" className="w-full" onClick={() => handleConfirmation('delete', item.id)}>Delete</Button>
+                {!item.approved && (
+                  <Button size="sm" variant="primary" className="w-full" onClick={() => handleUpdateApproval(item.id)}>Approve</Button>
+                )}
+                <Button size="sm" variant="accent" className="w-full" onClick={() => handleUpdateBoost(item.id)}>Boost</Button>
+                <Button size="sm" variant="secondary" className="w-full" onClick={() => handleConfirmation('hot', item.id)}>Hot</Button>
               </div>
             </Card>
-          ))
-        )}
-      </div>
-
-      {/* Delete Confirmation Dialog */}
-      {deleteId && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded shadow-md">
-            <p>Are you sure you want to delete this product?</p>
-            <div className="flex justify-between mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 rounded mr-2">Confirm</button>
-              <button onClick={() => setDeleteId(null)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-            </div>
-          </div>
+          ))}
         </div>
       )}
 
-
-
-      {hotId && (
-  <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-4 rounded shadow-md">
-      <p>Are you sure you want to mark this product as <strong>Hot</strong>?</p>
-      <div className="flex justify-between mt-4">
-        <button
-          onClick={confirmHot}
-          className="bg-black text-white px-4 py-2 rounded mr-2"
-        >
-          Confirm
-        </button>
-        <button
-          onClick={() => setHotId(null)}
-          className="bg-gray-300 px-4 py-2 rounded"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-    </div>
+      <ConfirmModal
+        open={confirmationPopup.visible}
+        title={activeCopy.title}
+        message={activeCopy.message}
+        confirmLabel={activeCopy.confirmLabel}
+        danger={confirmationPopup.action === 'delete'}
+        onConfirm={confirmAction}
+        onCancel={closeConfirmation}
+      />
+    </Container>
   );
 };
 

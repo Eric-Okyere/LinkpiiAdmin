@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
 import { Link } from 'react-router-dom';
+import {
+  Container,
+  PageHeader,
+  Card,
+  Badge,
+  Button,
+  Loader,
+  EmptyState,
+  ConfirmModal,
+} from '../components/ui';
 
 const Services = () => {
   const [data, setData] = useState([]);
@@ -76,60 +84,64 @@ const Services = () => {
   };
 
   return (
-    <div className="pt-16 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">All Services</h1>
-        <span className="bg-gray-200 px-4 py-2 rounded text-gray-700">Total: {productCount}</span>
-      </div>
+    <Container>
+      <PageHeader title="All Services" total={productCount} totalLabel="Total" />
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <BeatLoader color="#36D7B7" />
-        </div>
+        <Loader />
+      ) : productFilter.length === 0 ? (
+        <EmptyState title="No services found" subtitle="Service listings will appear here." />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {productFilter.map((item) => (
-            <Card key={item.id} className="bg-white rounded shadow">
-              <img src={item.picture} alt="Main" className="w-full h-48 object-cover" />
-              <img src={item.picturesec} alt="Secondary" className="w-full h-48 object-cover" />
+            <Card hover key={item.id} className="overflow-hidden">
+              <div className="grid grid-cols-2 gap-0.5 bg-ink-100">
+                <img src={item.picture} alt="Main" className="h-32 w-full object-cover" />
+                <img src={item.picturesec} alt="Secondary" className="h-32 w-full object-cover" />
+              </div>
               {item.video ? (
-                <video className="w-full h-48 mt-2" controls>
+                <video className="h-40 w-full bg-black" controls>
                   <source src={item.video} type="video/mp4" />
                 </video>
-              ) : (
-                <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-sm text-gray-400">No Video</div>
-              )}
-              <div className="p-4 text-sm text-gray-700 space-y-1">
-                <h2 className="text-lg font-semibold">{item.name}</h2>
-                {/* <p className="text-green-600 font-bold">Gh₵{item.price}</p> */}
+              ) : null}
+              <div className="space-y-1 p-4 text-sm text-ink-600">
+                <div className="flex items-start justify-between gap-2">
+                  <h2 className="font-display text-base font-semibold text-ink-900">{item.name}</h2>
+                  {item.approved ? <Badge tone="success">Approved</Badge> : <Badge tone="warning">Pending</Badge>}
+                </div>
                 <p>{item.description}</p>
                 <p>{item.region}, {item.town}</p>
-                <p>Phone: <a href={`tel:${item.phone}`} className="text-blue-600 hover:underline">{item.phone}</a></p>
+                <p>Phone: <a href={`tel:${item.phone}`} className="text-brand-600 hover:underline">{item.phone}</a></p>
                 <p>
-                  WhatsApp: <a 
-                    href={`https://wa.me/${item.whatsapp}?text=Linkpii will require your picture and a picture of your Ghana card before the approval of ${item.name}.`} 
-                    target="_blank" 
-                    className="text-green-600 hover:underline"
+                  WhatsApp:{' '}
+                  <a
+                    href={`https://wa.me/${item.whatsapp}?text=Linkpii will require your picture and a picture of your Ghana card before the approval of ${item.name}.`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-emerald-600 hover:underline"
                   >
                     {item.whatsapp}
                   </a>
                 </p>
                 <p>📍 {item.location}</p>
                 <p>👁 Views: {item.views}</p>
-                <Link to={`/user-detail/${item.author?._id}`} className="text-blue-500 hover:underline">
+                <Link to={`/user-detail/${item.author?._id}`} className="block font-medium text-brand-600 hover:underline">
                   Author: {item.author?.name}
                 </Link>
-                <p className={item.author?.verified ? 'text-green-600' : 'text-red-500'}>
-                  Verified: {item.author?.verified ? 'Yes' : 'No'}
+                <p className="flex items-center gap-1">
+                  Verified:
+                  <Badge tone={item.author?.verified ? 'success' : 'danger'}>
+                    {item.author?.verified ? 'Yes' : 'No'}
+                  </Badge>
                 </p>
                 <p>Author Phone: {item.author?.phone}</p>
-                <p className="text-gray-500">Posted: {formatDate(item.dateCreated)}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
-                  <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white py-2 rounded">Delete</button>
+                <p className="text-xs text-ink-400">Posted: {formatDate(item.dateCreated)}</p>
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <Button size="sm" variant="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
                   {!item.approved && (
-                    <button onClick={() => handleUpdateApproval(item.id)} className="bg-green-600 text-white py-2 rounded">Approve</button>
+                    <Button size="sm" variant="primary" onClick={() => handleUpdateApproval(item.id)}>Approve</Button>
                   )}
-                  <button onClick={() => handleUpdateBoost(item.id)} className="bg-blue-600 text-white py-2 rounded">Boost</button>
+                  <Button size="sm" variant="accent" onClick={() => handleUpdateBoost(item.id)}>Boost</Button>
                 </div>
               </div>
             </Card>
@@ -137,18 +149,16 @@ const Services = () => {
         </div>
       )}
 
-      {deleteId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-md">
-            <p>Are you sure you want to delete this product?</p>
-            <div className="flex justify-between mt-4">
-              <button onClick={confirmDelete} className="bg-red-600 text-white px-4 py-2 rounded mr-2">Confirm</button>
-              <button onClick={() => setDeleteId(null)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <ConfirmModal
+        open={!!deleteId}
+        title="Delete this service?"
+        message="This removes the listing permanently. This cannot be undone."
+        confirmLabel="Delete"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
+    </Container>
   );
 };
 

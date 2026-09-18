@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
-import { Link } from 'react-router-dom';
+import { Container, PageHeader, Card, Button, Loader, EmptyState, ConfirmModal } from './ui';
 
 const ForgotPass = () => {
   const [data, setData] = useState([]);
@@ -12,8 +10,6 @@ const ForgotPass = () => {
   const [productCount, setProductCount] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-
-  const myStyle = "font-bold font-uniquifier mx-4 text-gray-700 dark:text-gray-400 font-bold text-lg";
 
   // Updated API call
   const apiGet = () => {
@@ -69,53 +65,45 @@ const ForgotPass = () => {
   };
 
   return (
-    <div>
-      <div className="flex flex-wrap justify-around pt-20">
-        {loading ? (
-          <div className="flex items-center justify-center w-full h-full">
-            <BeatLoader color={'#36D7B7'} loading={loading} />
-          </div>
-        ) : (
-          Array.isArray(productFilter) && productFilter.length > 0 ? (
-            productFilter.map((item) => (
-              <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item._id}>
-                 {/* <Link to={`/user-detail/${item.userId}` } > */}
-                <h5 className={`${myStyle}, text-2xl`}>
-                  Request from {item.phone}
-                </h5>
-              {/* </Link> */}
-                <h3 className={myStyle}>{item.usermessage}</h3>
-                <h3 className={myStyle}>
-                  Created on {formatDate(item.dateCreated)}
-                </h3>
-                <div className="mt-4 space-y-4">
-                  <button
-                    onClick={() => handleDelete(item._id)}
-                    className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Delete
-                  </button>
-                </div>
-              
-              </Card>
-            ))
-          ) : (
-            <p>No products available</p>
-          )
-        )}
-      </div>
-      {showDeleteConfirmation && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded shadow-lg">
-            <p>Are you sure you want to delete this request?</p>
-            <div className="flex justify-center mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 mr-4 rounded">Yes</button>
-              <button onClick={() => setShowDeleteConfirmation(false)} className="bg-gray-500 text-white px-4 py-2 rounded">No</button>
-            </div>
-          </div>
+    <Container>
+      <PageHeader title="Password Reset Requests" total={productCount} totalLabel="Total Requests" />
+
+      {loading ? (
+        <Loader />
+      ) : Array.isArray(productFilter) && productFilter.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {productFilter.map((item) => (
+            <Card hover key={item._id} className="flex flex-col p-5">
+              <h5 className="font-display text-base font-bold text-ink-900">
+                Request from {item.phone}
+              </h5>
+              <p className="mt-2 text-sm text-ink-600">{item.usermessage}</p>
+              <p className="mt-2 text-xs text-ink-400">Created on {formatDate(item.dateCreated)}</p>
+              <Button
+                variant="danger"
+                size="sm"
+                className="mt-4 w-full"
+                onClick={() => handleDelete(item._id)}
+              >
+                Delete
+              </Button>
+            </Card>
+          ))}
         </div>
+      ) : (
+        <EmptyState title="No requests found" />
       )}
-    </div>
+
+      <ConfirmModal
+        open={showDeleteConfirmation}
+        title="Delete this request?"
+        message="This removes the password reset request permanently. This cannot be undone."
+        confirmLabel="Delete"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteConfirmation(false)}
+      />
+    </Container>
   );
 };
 

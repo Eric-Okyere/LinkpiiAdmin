@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
 import { FcCallTransfer } from "react-icons/fc";
+import { Container, PageHeader, SearchInput, Card, Button, Loader, EmptyState, ConfirmModal } from './ui';
 
 const Boost = () => {
     const [data, setData] = useState([]);
@@ -13,8 +12,6 @@ const Boost = () => {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-
-  const myStyle = "font-bold mx-4 text-black font-uniquifier text-lg";
 
   const apiGet = () => {
     fetch(`${baseURL}boost`)
@@ -84,13 +81,13 @@ console.log(currentTimeFormatted);
     } else {
       // If search term is provided, filter based on the original data array
       filteredProducts = data.filter((item) => {
-        const itemName = (item.name || '').toLowerCase(); 
-        
-        const itemReceiverPhone = (item.receiverphone || '').toLowerCase(); 
-        const itemPhone = (item.phone || '').toLowerCase(); 
-        const itemRecname = (item.recname || '').toLowerCase(); 
+        const itemName = (item.name || '').toLowerCase();
+
+        const itemReceiverPhone = (item.receiverphone || '').toLowerCase();
+        const itemPhone = (item.phone || '').toLowerCase();
+        const itemRecname = (item.recname || '').toLowerCase();
         const searchTermLower = searchTerm.toLowerCase();
-  
+
         return (
           itemName.includes(searchTermLower) ||
           itemRecname.includes(searchTermLower) ||
@@ -101,7 +98,7 @@ console.log(currentTimeFormatted);
     }
     setProductFilter(filteredProducts);
   };
-  
+
   const handleClear=()=> {
     setSearchTerm("")
     setProductFilter(data)
@@ -110,65 +107,53 @@ console.log(currentTimeFormatted);
 
 
   return (
-    <div>
-      <div className='flex justify-between mx-8 pt-16'>
-        <h1 className='font-bold font-uniquifier'>ALL CALLS</h1>
-        <h2 className=' bg-[#f2f2f2] font-bold rounded-lg p-4 font-uniquifier'>Total Calls: {productCount}</h2>
-      </div>
-      <div className="mx-8 mt-4">
-        <input
-          type="text"
-          placeholder="Search by name or phone number"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-300 rounded-lg w-full"
-        />
-       <div className='flex justify-between'>
-        <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2 ml-2 rounded-lg">Search</button>
-        <button onClick={handleClear} className="bg-red-500 text-white px-4 py-2 ml-2 rounded-lg">Clear</button>
-        </div> </div>
-      <div className="flex flex-wrap justify-around ">
-        {loading ? (
-          <div className="flex items-center justify-center w-full h-full">
-            <BeatLoader color={'#36D7B7'} loading={loading} />
-          </div>
-        ) : (
-          productFilter.map((item) => (
-            <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item._id}>
-              <div className="flex items-center justify-center pt-1">
-              {/* <Feather name="phone-call" size={24} color="black" /> */}
-            <FcCallTransfer  size={34}/>
+    <Container>
+      <PageHeader title="Boosted Products" total={productCount} totalLabel="Total Boosted" />
+
+      <SearchInput
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        onSearch={handleSearch}
+        onClear={handleClear}
+        placeholder="Search by name or phone number"
+        className="mb-6"
+      />
+
+      {loading ? (
+        <Loader />
+      ) : productFilter.length === 0 ? (
+        <EmptyState title="No boosts found" subtitle="Try a different search term." />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {productFilter.map((item) => (
+            <Card hover key={item._id} className="flex flex-col items-center p-5 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                <FcCallTransfer size={24} />
               </div>
-              <h3 className={myStyle}>{item.productname} was 
-              <p className='text-red-500'>Boosted</p> from {item.pagename} on {item.receiverphone}</h3>
-              <h3 className={myStyle}>
-              {formatDateTime(item.dateCreated)}
-                </h3>
-             
-              
-              <button
-                onClick={() => handleDelete(item._id)}
-                className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-              >
+              <p className="mt-3 text-sm text-ink-700">
+                <span className="font-display font-semibold text-ink-900">{item.productname}</span> was{' '}
+                <span className="font-semibold text-red-600">Boosted</span> from {item.pagename} on {item.receiverphone}
+              </p>
+              <p className="mt-1 text-xs text-ink-400">{formatDateTime(item.dateCreated)}</p>
+
+              <Button size="sm" variant="danger" className="mt-4 w-full" onClick={() => handleDelete(item._id)}>
                 Delete
-              </button>
+              </Button>
             </Card>
-          ))
-        )}
-      </div>
-      {/* Confirmation popup */}
-      {showConfirmation && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded shadow-lg">
-            <p>Are you sure you want to delete this item?</p>
-            <div className="flex justify-center mt-4">
-              <button onClick={confirmDelete} className="bg-red-500 text-white px-4 py-2 mr-4 rounded">Yes</button>
-              <button onClick={() => setShowConfirmation(false)} className="bg-gray-500 text-white px-4 py-2 rounded">No</button>
-            </div>
-          </div>
+          ))}
         </div>
       )}
-    </div>
+
+      <ConfirmModal
+        open={showConfirmation}
+        title="Delete this boost?"
+        message="This removes the boost record permanently. This cannot be undone."
+        confirmLabel="Delete"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirmation(false)}
+      />
+    </Container>
   );
 };
 

@@ -4,6 +4,7 @@ import axios from 'axios';
 import baseURL from '../assets/baseURL';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Container, Card, Button, Loader, EmptyState } from './ui';
 
 const UpdateUser = () => {
   const { id } = useParams();
@@ -31,13 +32,13 @@ const UpdateUser = () => {
       });
   }, [id]);
 
- 
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     setIsLoading(true);
-  
+
     try {
       const response = await axios.put(`${baseURL}card/${id}/details`, {
         name,
@@ -49,10 +50,10 @@ const UpdateUser = () => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       console.log('User updated successfully:', response.data);
       toast.success('User details updated successfully!');
-  
+
       setIsLoading(false);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -60,65 +61,66 @@ const UpdateUser = () => {
       setIsLoading(false);
     }
   };
-  
 
 
-
-
+  const inputClasses =
+    'w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100';
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <Container>
+        <Loader />
+      </Container>
+    );
   }
 
   return (
-    <div className="flex justify-center items-center h-screen">
-         <ToastContainer />
-      {user ? (
-        <form onSubmit={handleSubmit} className="text-center p-8 bg-gray-100 shadow-2xl rounded-lg">
-          <h1 className="text-3xl font-bold mb-4">Update User</h1>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
-            className="block mb-4 p-2 border border-gray-300 rounded"
-          />
-          <input
-            type="text"
-            value={lastname}
-            onChange={(e) => setLastname(e.target.value)}
-            placeholder="Lastname"
-            className="block mb-4 p-2 border border-gray-300 rounded"
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            className="block mb-4 p-2 border border-gray-300 rounded"
-          />
-          <input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone"
-            className="block mb-4 p-2 border border-gray-300 rounded"
-          />
+    <Container>
+      <ToastContainer />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        {user ? (
+          <Card className="w-full max-w-md p-8">
+            <h1 className="mb-6 font-display text-2xl font-bold text-ink-900">Update User</h1>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name"
+                className={inputClasses}
+              />
+              <input
+                type="text"
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
+                placeholder="Lastname"
+                className={inputClasses}
+              />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className={inputClasses}
+              />
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Phone"
+                className={inputClasses}
+              />
 
-        
-
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Updating...' : 'Update User'}
-          </button>
-        </form>
-      ) : (
-        <p>User not found</p>
-      )}
-    </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Updating...' : 'Update User'}
+              </Button>
+            </form>
+          </Card>
+        ) : (
+          <EmptyState title="User not found" />
+        )}
+      </div>
+    </Container>
   );
 };
 

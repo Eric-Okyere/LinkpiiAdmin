@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import baseURL from '../assets/baseURL';
+import {
+  Container,
+  PageHeader,
+  Card,
+  Badge,
+  Button,
+  Loader,
+  EmptyState,
+  ConfirmModal,
+} from './ui';
 
 const AllProducts = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productFilter, setProductFilter] = useState([]);
   const [productCount, setProductCount] = useState(0);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); 
-  const [deleteId, setDeleteId] = useState(null); 
-  const [showApproveConfirmation, setShowApproveConfirmation] = useState(false);
-  const [showBoostConfirmation, setShowBoostConfirmation] = useState(false);
-  const [approveId, setApproveId] = useState(null);
-  const [editId, setEditId] = useState(null);
+  const [confirmationPopup, setConfirmationPopup] = useState({ visible: false, action: null, id: null });
 
   useEffect(() => {
     fetch(`${baseURL}send`)
@@ -41,109 +44,138 @@ const AllProducts = () => {
   });
 
   const handleDelete = (id) => {
-    setShowDeleteConfirmation(true);
-    setDeleteId(id);
+    setConfirmationPopup({ visible: true, action: 'delete', id });
   };
 
   const confirmDelete = () => {
-    axios.delete(`${baseURL}send/${deleteId}`)
+    const { id } = confirmationPopup;
+    axios.delete(`${baseURL}send/${id}`)
       .then(() => {
-        const updated = productFilter.filter(item => item.id !== deleteId);
+        const updated = productFilter.filter(item => item.id !== id);
         setProductFilter(updated);
         setProductCount(prev => prev - 1);
-        setShowDeleteConfirmation(false);
       })
       .catch((error) => console.error(error));
   };
 
   const handleUpdateApproval = (id) => {
-    setApproveId(id);
-    setShowApproveConfirmation(true);
+    setConfirmationPopup({ visible: true, action: 'approve', id });
   };
 
   const confirmApprove = () => {
-    axios.put(`${baseURL}send/${approveId}/approve`)
+    const { id } = confirmationPopup;
+    axios.put(`${baseURL}send/${id}/approve`)
       .then(({ data }) => {
         const updated = productFilter.map(product =>
-          product.id === approveId ? { ...product, approved: true } : product
+          product.id === id ? { ...product, approved: true } : product
         );
         setProductFilter(updated);
-        setShowApproveConfirmation(false);
       })
       .catch((error) => console.error('Error approving product:', error));
   };
 
   const handleUpdateBoost = (id) => {
-    setApproveId(id);
-    setShowBoostConfirmation(true);
+    setConfirmationPopup({ visible: true, action: 'boost', id });
   };
 
   const confirmBoost = () => {
-    axios.put(`${baseURL}send/${approveId}/boost`)
+    const { id } = confirmationPopup;
+    axios.put(`${baseURL}send/${id}/boost`)
       .then(({ data }) => {
         const updated = productFilter.map(product =>
-          product.id === approveId ? { ...product, boost: true } : product
+          product.id === id ? { ...product, boost: true } : product
         );
         setProductFilter(updated);
-        setShowBoostConfirmation(false);
       })
       .catch((error) => console.error('Error boosting product:', error));
   };
 
+  const handleEdit = (id) => {
+    setConfirmationPopup({ visible: true, action: 'edit', id });
+  };
+
+  const closeConfirmation = () => setConfirmationPopup({ visible: false, action: null, id: null });
+
+  const confirmAction = () => {
+    const { action } = confirmationPopup;
+    if (action === 'delete') confirmDelete();
+    else if (action === 'approve') confirmApprove();
+    else if (action === 'boost') confirmBoost();
+    else if (action === 'edit') {
+      window.location.href = `/agricedit/${confirmationPopup.id}`;
+      return;
+    }
+    closeConfirmation();
+  };
+
+  const confirmCopy = {
+    delete: { title: 'Delete this product?', message: 'This removes the listing permanently. This cannot be undone.', confirmLabel: 'Delete', danger: true },
+    approve: { title: 'Approve this product?', message: 'The listing will become visible to buyers.', confirmLabel: 'Approve' },
+    boost: { title: 'Boost this product?', message: 'This will feature the listing more prominently.', confirmLabel: 'Boost' },
+    edit: { title: 'Edit this product?', message: 'You will be taken to the edit screen.', confirmLabel: 'Continue' },
+  };
+  const activeCopy = confirmCopy[confirmationPopup.action] || {};
+
   return (
-    <div className="pt-16 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">All Agric Products</h1>
-        <span className="bg-gray-200 px-4 py-2 rounded text-gray-700">
-          Total: {productCount}
-        </span>
-      </div>
+    <Container>
+      <PageHeader title="All Agric Products" total={productCount} totalLabel="Total" />
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <BeatLoader color="#36D7B7" />
-        </div>
+        <Loader />
+      ) : productFilter.length === 0 ? (
+        <EmptyState title="No products found" subtitle="Agric product listings will appear here." />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {productFilter.map((item) => (
-            <Card key={item.id} className="bg-white rounded shadow">
-              <img src={item.picture} alt="Main" className="w-full h-48 object-cover" />
-              <img src={item.picturesec} alt="Secondary" className="w-full h-48 object-cover" />
+            <Card hover key={item.id} className="overflow-hidden">
+              <div className="grid grid-cols-2 gap-0.5 bg-ink-100">
+                <img src={item.picture} alt="Main" className="h-28 w-full object-cover" />
+                <img src={item.picturesec} alt="Secondary" className="h-28 w-full object-cover" />
+              </div>
               {item.video ? (
-                <video className="w-full h-48 mt-2" controls>
+                <video className="h-40 w-full bg-black" controls>
                   <source src={item.video} type="video/mp4" />
                 </video>
-              ) : (
-                <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-sm text-gray-400">No Video</div>
-              )}
-              <div className="p-4">
-                <h2 className="text-lg font-semibold mb-1">{item.name}</h2>
-                <p className="text-green-600 font-bold">Gh₵{item.price}</p>
-                <p>{item.description}</p>
-                <p>{item.region}, {item.town}</p>
-                <p className="text-sm">{formatDate(item.dateCreated)}</p>
+              ) : null}
 
-                <div className="mt-2 text-sm text-gray-600">
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <h2 className="font-display text-base font-semibold text-ink-900">{item.name}</h2>
+                  {item.approved ? (
+                    <Badge tone="success">Approved</Badge>
+                  ) : (
+                    <Badge tone="warning">Pending</Badge>
+                  )}
+                </div>
+                <p className="mt-1 font-display text-lg font-bold text-brand-600">Gh₵{item.price}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-ink-600">{item.description}</p>
+                <p className="mt-1 text-sm text-ink-500">{item.region}, {item.town}</p>
+                <p className="mt-0.5 text-xs text-ink-400">{formatDate(item.dateCreated)}</p>
+
+                <div className="mt-3 space-y-1 border-t border-ink-100 pt-3 text-sm text-ink-600">
                   <p>📞 {item.phone}</p>
                   <p>💬 {item.whatsapp}</p>
                   <p>📍 {item.location}</p>
                   <p>👁 Views: {item.views}</p>
-                  <Link to={`/user-detail/${item.author?._id}`} className="text-blue-600 hover:underline">
+                  <Link to={`/user-detail/${item.author?._id}`} className="block font-medium text-brand-600 hover:underline">
                     Author: {item?.author?.name}
                   </Link>
-                  <p className={item?.author?.verified ? 'text-green-500' : 'text-red-500'}>
-                    Verified: {item?.author?.verified ? 'Yes' : 'No'}
+                  <p className="flex items-center gap-1">
+                    Verified:
+                    <Badge tone={item?.author?.verified ? 'success' : 'danger'}>
+                      {item?.author?.verified ? 'Yes' : 'No'}
+                    </Badge>
                   </p>
                   <p>📞 {item?.author?.phone}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                  <button onClick={() => handleDelete(item.id)} className="bg-red-500 text-white py-2 rounded">Delete</button>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Button size="sm" variant="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
                   {!item.approved && (
-                    <button onClick={() => handleUpdateApproval(item.id)} className="bg-green-600 text-white py-2 rounded">Approve</button>
+                    <Button size="sm" variant="primary" onClick={() => handleUpdateApproval(item.id)}>Approve</Button>
                   )}
-                  <button onClick={() => handleUpdateBoost(item.id)} className="bg-blue-600 text-white py-2 rounded">Boost</button>
-                  <button onClick={() => setEditId(item.id)} className="bg-yellow-500 text-white py-2 rounded">Edit</button>
+                  <Button size="sm" variant="accent" onClick={() => handleUpdateBoost(item.id)}>Boost</Button>
+                  <Button size="sm" variant="secondary" onClick={() => handleEdit(item.id)}>Edit</Button>
                 </div>
               </div>
             </Card>
@@ -151,37 +183,17 @@ const AllProducts = () => {
         </div>
       )}
 
-      {/* Modals */}
-      {showApproveConfirmation && (
-        <ConfirmationModal text="approve" onConfirm={confirmApprove} onCancel={() => setShowApproveConfirmation(false)} />
-      )}
-      {showDeleteConfirmation && (
-        <ConfirmationModal text="delete" onConfirm={confirmDelete} onCancel={() => setShowDeleteConfirmation(false)} />
-      )}
-      {showBoostConfirmation && (
-        <ConfirmationModal text="boost" onConfirm={confirmBoost} onCancel={() => setShowBoostConfirmation(false)} />
-      )}
-      {editId && (
-        <ConfirmationModal
-          text="edit"
-          onConfirm={() => window.location.href = `/agricedit/${editId}`}
-          onCancel={() => setEditId(null)}
-        />
-      )}
-    </div>
+      <ConfirmModal
+        open={confirmationPopup.visible}
+        title={activeCopy.title}
+        message={activeCopy.message}
+        confirmLabel={activeCopy.confirmLabel}
+        danger={confirmationPopup.action === 'delete'}
+        onConfirm={confirmAction}
+        onCancel={closeConfirmation}
+      />
+    </Container>
   );
 };
-
-const ConfirmationModal = ({ text, onConfirm, onCancel }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded shadow-lg">
-      <p>Are you sure you want to {text} this product?</p>
-      <div className="flex justify-center mt-4 space-x-4">
-        <button onClick={onConfirm} className="bg-blue-600 text-white px-4 py-2 rounded">Yes</button>
-        <button onClick={onCancel} className="bg-gray-400 text-white px-4 py-2 rounded">No</button>
-      </div>
-    </div>
-  </div>
-);
 
 export default AllProducts;

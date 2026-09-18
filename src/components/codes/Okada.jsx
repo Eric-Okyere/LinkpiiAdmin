@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { BeatLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
 import baseURL from '../../assets/baseURL';
 import axios from 'axios';
+import { FaPhoneAlt } from 'react-icons/fa';
+import {
+  Container,
+  PageHeader,
+  Card,
+  Badge,
+  Button,
+  Loader,
+  EmptyState,
+  ConfirmModal,
+} from '../ui';
 
 const Okada = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [productFilter, setProductFilter] = useState([]);
   const [productCount, setProductCount] = useState(0); // New state for product count
-
-
+  const [confirmationPopup, setConfirmationPopup] = useState({ visible: false, action: null, itemId: null });
 
   const apiGet = () => {
     fetch(`${baseURL}okada`)
@@ -17,6 +26,7 @@ const Okada = () => {
       .then((json) => {
         console.log(json);
         setData(json);
+        setProductFilter(json);
         setLoading(false); // Set loading to false once data is fetched
       })
       .catch((error) => {
@@ -50,145 +60,101 @@ const Okada = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const myStylesh1 = 'font-bold font-mono';
-  const Spanstyle = 'text-black  font-serif';
-
-
-
-  const handleDelete = (id) => {
-    const isConfirmed = window.confirm('Are you sure you want to delete this bike?');
-
-    if (isConfirmed) {
-      axios.delete(`${baseURL}okada/${id}`)
-        .then((res) => {
-          const products = productFilter.filter((item) => item.id !== id);
-          setProductFilter(products);
-        })
-        .catch((error) => console.log(error));
-    }
+  const handleConfirmation = (action, itemId) => {
+    setConfirmationPopup({ visible: true, action, itemId });
   };
 
-  const handleUpdateApproval = async (_id) => {
-    const isConfirmed = window.confirm('Are you sure you want to approve this bike?');
-    if (isConfirmed) {
-      try {
-        const response = await axios.put(`${baseURL}okada/${_id}/approveokada`);
-        const updatedProduct = response.data;
-        console.log('Product approval updated:', updatedProduct);
-      } catch (error) {
-        console.error('Error updating product approval:', error);
+  const closeConfirmation = () => setConfirmationPopup({ visible: false, action: null, itemId: null });
+
+  const confirmAction = async () => {
+    const { action, itemId } = confirmationPopup;
+    try {
+      if (action === 'delete') {
+        await axios.delete(`${baseURL}okada/${itemId}`);
+        const products = productFilter.filter((item) => item.id !== itemId);
+        setProductFilter(products);
+      } else if (action === 'approve') {
+        const response = await axios.put(`${baseURL}okada/${itemId}/approveokada`);
+        console.log('Product approval updated:', response.data);
+        setProductFilter((prev) => prev.map((item) => (item._id === itemId ? { ...item, approved: true } : item)));
+      } else if (action === 'deactivate') {
+        const response = await axios.put(`${baseURL}okada/${itemId}/deactivateokada`);
+        console.log('Product approval updated:', response.data);
+        setProductFilter((prev) => prev.map((item) => (item._id === itemId ? { ...item, deactivate: true } : item)));
       }
-    }
-  };
-  
-  const handleDeactivate = async (_id) => {
-    const isConfirmed = window.confirm('Are you sure you want to deactivate this bike?');
-    if (isConfirmed) {
-      try {
-        const response = await axios.put(`${baseURL}okada/${_id}/deactivateokada`);
-        const updatedProduct = response.data;
-        console.log('Product approval updated:', updatedProduct);
-      } catch (error) {
-        console.error('Error updating product approval:', error);
-      }
+    } catch (error) {
+      console.error(`Error during ${action}:`, error);
+    } finally {
+      closeConfirmation();
     }
   };
 
-
+  const confirmCopy = {
+    delete: { title: 'Delete this bike?', message: 'This removes the okada listing permanently. This cannot be undone.', confirmLabel: 'Delete', danger: true },
+    approve: { title: 'Approve this bike?', message: 'This will make the okada listing visible to the public.', confirmLabel: 'Approve' },
+    deactivate: { title: 'Deactivate this bike?', message: 'This will hide the okada listing from the public.', confirmLabel: 'Deactivate', danger: true },
+  };
+  const activeCopy = confirmCopy[confirmationPopup.action] || {};
 
   return (
-    <div>
-      <div className='pt-20'>
-      <div className='flex justify-between mx-8 mb-2 '>
-     <h1 className='font-bold font-uniquifier '>TOTAL DRIVERS</h1>
-      <h2 className=' bg-[#f2f2f2] rounded-lg p-4 font-uniquifier font-bold'>Total Cars: {productCount}</h2>
-      </div>
+    <Container>
+      <PageHeader title="Okada Riders" total={productCount} totalLabel="Total Riders" />
 
-
-      </div>
       {loading ? (
-      <div className="flex items-center justify-center w-full h-full">
-      <BeatLoader color={'#36D7B7'} loading={loading} />
-    </div>
+        <Loader />
+      ) : data.length === 0 ? (
+        <EmptyState title="No okada riders found" subtitle="Okada listings will appear here once submitted." />
       ) : (
-        // Display the fetched data
-        data.map((item) => (
-         <>
-          
-          <div key={item._id} className='bg-[#f2f2f2] drop-shadow-2xl mb-10 mr-10 ml-10'>
-            <div className='p-5 md:flex'>
-              <div className='mt-10 p-5 md:flex'>
-                <div className='flex justify-center'>
-                  <img src={item.driverpic} className='w-80 h-52 rounded-lg mr-5 mb-5' alt='image' />
-                </div>
-                <div className='flex justify-center'>
-                  <img src={item.carpic} className='w-80 mb-5 h-52 rounded-lg mr-5' alt='image' />
-                </div>
-                <div className='justify-center items-center'>
-                  <h1 className={myStylesh1}>
-                    Views: <span className={Spanstyle}>{item.view}</span>
-                  </h1>
-                  <h1 className={myStylesh1}>
-                    Name: <span className={Spanstyle}>{item.name}</span>
-                  </h1>
-                 
-                  <h1 className={myStylesh1}>
-                    Phone: <span className={Spanstyle}>{item.phone}</span>
-                  </h1>
-                  <h1 className={myStylesh1}>
-                    CarNumber: <span className={Spanstyle}>{item.carnum}</span>
-                  </h1>
-                  <h1 className={myStylesh1}>
-                    License: <span className={Spanstyle}>{item.card}</span>
-                  </h1>
-                  <h1 className={myStylesh1}>
-                    Region: <span className={Spanstyle}>{item.region}</span>
-                  </h1>
-                  <h1 className={myStylesh1}>
-                    Town: <span className={Spanstyle}>{item.town}</span>
-                  </h1>
-                  
-                  <h1 className={myStylesh1}>
-                    Date: <span className={Spanstyle}>{formatDate(item.dateCreated)}</span>
-                  </h1>
-                  
-                </div>
-                
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {data.map((item) => (
+            <Card hover key={item._id} className="flex flex-col p-5">
+              <div className="flex gap-2">
+                <img src={item.driverpic} className="h-28 w-1/2 rounded-xl object-cover" alt="Driver" />
+                <img src={item.carpic} className="h-28 w-1/2 rounded-xl object-cover" alt="Bike" />
               </div>
-            
-            </div>
-            
-            <div className="mt-4 flex space-x-16">
-                <button
-                  onClick={() => handleDelete(item._id)}
-                  className="bg-red-500 font-uniquifier w-full text-white p-2 rounded"
-                >
-                  Delete
-                </button>
 
+              <div className="mt-4 space-y-1 text-sm text-ink-600">
+                <p>Views: {item.view}</p>
+                <p className="font-display text-base font-semibold text-ink-900">{item.name}</p>
+                <a href={`tel:${item.phone}`} className="flex items-center gap-1.5 hover:text-brand-600 hover:underline">
+                  <FaPhoneAlt className="text-ink-400" size={12} /> {item.phone}
+                </a>
+                <p>Car Number: {item.carnum}</p>
+                <p>License: {item.card}</p>
+                <p>Region: {item.region}</p>
+                <p>Town: {item.town}</p>
+                <p className="text-xs text-ink-400">Joined {formatDate(item.dateCreated)}</p>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {item.approved && <Badge tone="success">Approved</Badge>}
+                {item.deactivate && <Badge tone="danger">Deactivated</Badge>}
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 gap-2">
+                <Button size="sm" variant="danger" onClick={() => handleConfirmation('delete', item._id)}>Delete</Button>
                 {!item.approved && (
-                  <button
-                    onClick={() => handleUpdateApproval(item._id)}
-                    className="bg-green-500 font-uniquifier w-full text-white p-2 rounded"
-                  >
-                    Approve
-                  </button>
+                  <Button size="sm" variant="primary" onClick={() => handleConfirmation('approve', item._id)}>Approve</Button>
                 )}
-                 {item.approved && !item.deactivate && (
-    <button
-      onClick={() => handleDeactivate(item._id)}
-      className="bg-black font-uniquifier w-full text-white p-2 rounded"
-    >
-      Deactivate
-    </button>
-  )}
+                {item.approved && !item.deactivate && (
+                  <Button size="sm" variant="secondary" onClick={() => handleConfirmation('deactivate', item._id)}>Deactivate</Button>
+                )}
               </div>
-
-          </div>
-          </> 
-        ))
+            </Card>
+          ))}
+        </div>
       )}
-    </div>
+
+      <ConfirmModal
+        open={confirmationPopup.visible}
+        title={activeCopy.title}
+        message={activeCopy.message}
+        confirmLabel={activeCopy.confirmLabel}
+        danger={!!activeCopy.danger}
+        onConfirm={confirmAction}
+        onCancel={closeConfirmation}
+      />
+    </Container>
   );
 };
 

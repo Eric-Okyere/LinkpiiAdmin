@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import { BeatLoader } from 'react-spinners';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
+import { Container, PageHeader, Card, Loader, EmptyState } from '../components/ui';
 
 const ApprovedFashion = () => {
   const [approvedProducts, setApprovedProducts] = useState([]);
@@ -29,38 +28,32 @@ const ApprovedFashion = () => {
   };
 
   return (
-    <>
-    <div>
-        <h1 className='pt-16 text-center font-bold font-uniquifier'>APPROVED PRODUCTS</h1>
-      </div>
-    <div className="flex flex-wrap justify-around pt-16">
-      
+    <Container>
+      <PageHeader title="Approved Fashion Products" total={approvedProducts.length} totalLabel="Total" />
+
       {loading ? (
-        <div className="flex items-center justify-center w-full h-full">
-          <BeatLoader color={'#36D7B7'} loading={loading} />
-        </div>
+        <Loader />
+      ) : approvedProducts.length === 0 ? (
+        <EmptyState title="No approved products" subtitle="Fashion products you approve will appear here." />
       ) : (
-        approvedProducts.map((item) => (
-          <Card className="max-w-sm m-4 flex flex-col bg-[#f2f2f2]" key={item.id}>
-            {/* Display approved product details */}
-            <img width={500} height={500} src={item.picture} alt="image 1" />
-            <h5 className="font-bold font-serif mx-4 text-gray-700 dark:text-gray-400 text-lg">
-              {item.name}
-            </h5>
-            <h3 className="font-bold mx-4 text-gray-700 font-uniquifier dark:text-gray-400"> Views:{item.views}</h3>
-            <h3 className="font-bold mx-4 text-gray-700 font-uniquifier dark:text-gray-400"> Gh₵{item.price}</h3>
-            <h3 className="font-bold mx-4 text-gray-700 font-uniquifier dark:text-gray-400">{item.description}</h3>
-            <h3 className="font-bold mx-4 text-gray-700 font-uniquifier dark:text-gray-400">{item.region}</h3>
-            <h3 className="font-bold mx-4 text-gray-700 font-uniquifier dark:text-gray-400">{item.town}</h3>
-            <h3 className="font-bold mx-4 text-gray-700 font-uniquifier dark:text-gray-400">{item.location}</h3>
-            <h3 className="font-bold mx-4 text-gray-700 font-uniquifier dark:text-gray-400">
-              {formatDate(item.dateCreated)}
-            </h3>
-          </Card>
-        ))
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {approvedProducts.map((item) => (
+            <Card hover key={item.id} className="overflow-hidden">
+              <img width={500} height={500} src={item.picture} alt={item.name} className="h-48 w-full object-cover" />
+              <div className="p-4">
+                <h5 className="font-display text-lg font-semibold text-ink-900">{item.name}</h5>
+                <p className="mt-1 text-sm text-ink-500">Views: {item.views}</p>
+                <p className="mt-1 font-display text-lg font-bold text-brand-600">Gh₵{item.price}</p>
+                <p className="mt-1 text-sm text-ink-600">{item.description}</p>
+                <p className="mt-1 text-sm text-ink-500">{item.region}, {item.town}</p>
+                <p className="text-sm text-ink-500">{item.location}</p>
+                <p className="mt-1 text-xs text-ink-400">{formatDate(item.dateCreated)}</p>
+              </div>
+            </Card>
+          ))}
+        </div>
       )}
-    </div>
-    </>
+    </Container>
   );
 };
 
