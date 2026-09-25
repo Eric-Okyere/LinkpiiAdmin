@@ -14,6 +14,7 @@ const UpdateUser = () => {
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [gender, setGender] = useState('');
   const [isLoading, setIsLoading] = useState(false);  // State to track form submission
 
   useEffect(() => {
@@ -24,6 +25,7 @@ const UpdateUser = () => {
         setLastname(response.data.lastname);
         setEmail(response.data.email);
         setPhone(response.data.phone);
+        setGender(response.data.gender || '');
         setLoading(false);
       })
       .catch((error) => {
@@ -44,7 +46,8 @@ const UpdateUser = () => {
         name,
         lastname,
         email,
-        phone
+        phone,
+        gender
       }, {
         headers: {
           'Content-Type': 'application/json',
@@ -110,6 +113,16 @@ const UpdateUser = () => {
                 placeholder="Phone"
                 className={inputClasses}
               />
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className={inputClasses}
+              >
+                <option value="">Gender not set</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Updating...' : 'Update User'}
