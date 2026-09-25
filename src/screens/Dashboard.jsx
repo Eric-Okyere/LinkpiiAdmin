@@ -17,6 +17,9 @@ import {
   FaPhoneAlt,
   FaWhatsapp,
   FaExclamationTriangle,
+  FaMars,
+  FaVenus,
+  FaGenderless,
 } from 'react-icons/fa';
 import { Container, PageHeader, StatTile, Card } from '../components/ui';
 import baseURL from '../assets/baseURL';
@@ -66,9 +69,18 @@ const STAT_GROUPS = [
 
 const ALL_STATS = STAT_GROUPS.flatMap((g) => g.stats);
 
+const GENDER_TILES = [
+  { key: 'Male', label: 'Male Users', icon: FaMars },
+  { key: 'Female', label: 'Female Users', icon: FaVenus },
+  { key: 'Other', label: 'Other', icon: FaGenderless },
+  { key: 'Unspecified', label: 'Gender Not Set', icon: FaGenderless },
+];
+
 const Dashboard = () => {
   const [counts, setCounts] = useState({});
   const [loading, setLoading] = useState(true);
+  const [genderCounts, setGenderCounts] = useState({});
+  const [genderLoading, setGenderLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -90,6 +102,25 @@ const Dashboard = () => {
       setCounts(next);
       setLoading(false);
     });
+
+    fetch(`${baseURL}getUsers`)
+      .then((res) => res.json())
+      .then((users) => {
+        if (cancelled || !Array.isArray(users)) return;
+        const tally = { Male: 0, Female: 0, Other: 0, Unspecified: 0 };
+        users.forEach((user) => {
+          if (user.gender === 'Male' || user.gender === 'Female' || user.gender === 'Other') {
+            tally[user.gender] += 1;
+          } else {
+            tally.Unspecified += 1;
+          }
+        });
+        setGenderCounts(tally);
+        setGenderLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setGenderLoading(false);
+      });
 
     return () => {
       cancelled = true;
@@ -119,6 +150,17 @@ const Dashboard = () => {
                 loading={loading}
               />
             ))}
+            {group.title === 'People' &&
+              GENDER_TILES.map((tile) => (
+                <StatTile
+                  key={tile.key}
+                  icon={tile.icon}
+                  label={tile.label}
+                  to="/users"
+                  value={genderCounts[tile.key]}
+                  loading={genderLoading}
+                />
+              ))}
           </div>
         </div>
       ))}

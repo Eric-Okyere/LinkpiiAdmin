@@ -130,6 +130,8 @@ const AllUsers = () => {
     window.location.href = `sms:${phone}?&body=${message}`;
   };
 
+  const genderTone = { Male: 'brand', Female: 'warning', Other: 'neutral' };
+
   const confirmCopy = {
     delete: { title: 'Delete this user?', message: 'This removes the account permanently. This cannot be undone.', confirmLabel: 'Delete', danger: true },
     report: { title: 'Report this user?', message: 'This will flag the account as reported.', confirmLabel: 'Report' },
@@ -177,9 +179,12 @@ const AllUsers = () => {
                 📞 {item.phone}
               </a>
               <p className="mt-1 text-xs text-ink-400">Joined {formatDate(item.dateCreated)}</p>
-              {item.report && (
-                <Badge tone="danger" className="mt-2">Reported</Badge>
-              )}
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+                <Badge tone={genderTone[item.gender] || 'neutral'}>
+                  {item.gender || 'Gender not set'}
+                </Badge>
+                {item.report && <Badge tone="danger">Reported</Badge>}
+              </div>
 
               <div className="mt-4 grid w-full grid-cols-3 gap-2">
                 <Button size="sm" variant="primary" className="!bg-emerald-600 hover:!bg-emerald-700" onClick={() => handleConfirmation('whatsapp', item.phone)}>WhatsApp</Button>
