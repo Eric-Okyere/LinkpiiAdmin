@@ -74,6 +74,22 @@ const AllProducts = () => {
       .catch((error) => console.error('Error approving product:', error));
   };
 
+  const handleUnapprove = (id) => {
+    setConfirmationPopup({ visible: true, action: 'unapprove', id });
+  };
+
+  const confirmUnapprove = () => {
+    const { id } = confirmationPopup;
+    axios.put(`${baseURL}send/${id}/deactivate`)
+      .then(() => {
+        const updated = productFilter.map(product =>
+          product.id === id ? { ...product, approved: false } : product
+        );
+        setProductFilter(updated);
+      })
+      .catch((error) => console.error('Error unapproving product:', error));
+  };
+
   const handleUpdateBoost = (id) => {
     setConfirmationPopup({ visible: true, action: 'boost', id });
   };
@@ -100,6 +116,7 @@ const AllProducts = () => {
     const { action } = confirmationPopup;
     if (action === 'delete') confirmDelete();
     else if (action === 'approve') confirmApprove();
+    else if (action === 'unapprove') confirmUnapprove();
     else if (action === 'boost') confirmBoost();
     else if (action === 'edit') {
       window.location.href = `/agricedit/${confirmationPopup.id}`;
@@ -111,6 +128,7 @@ const AllProducts = () => {
   const confirmCopy = {
     delete: { title: 'Delete this product?', message: 'This removes the listing permanently. This cannot be undone.', confirmLabel: 'Delete', danger: true },
     approve: { title: 'Approve this product?', message: 'The listing will become visible to buyers.', confirmLabel: 'Approve' },
+    unapprove: { title: 'Unapprove this product?', message: 'The listing will be hidden from buyers until it is re-approved.', confirmLabel: 'Unapprove', danger: true },
     boost: { title: 'Boost this product?', message: 'This will feature the listing more prominently.', confirmLabel: 'Boost' },
     edit: { title: 'Edit this product?', message: 'You will be taken to the edit screen.', confirmLabel: 'Continue' },
   };
@@ -171,7 +189,9 @@ const AllProducts = () => {
 
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   <Button size="sm" variant="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
-                  {!item.approved && (
+                  {item.approved ? (
+                    <Button size="sm" variant="secondary" onClick={() => handleUnapprove(item.id)}>Unapprove</Button>
+                  ) : (
                     <Button size="sm" variant="primary" onClick={() => handleUpdateApproval(item.id)}>Approve</Button>
                   )}
                   <Button size="sm" variant="accent" onClick={() => handleUpdateBoost(item.id)}>Boost</Button>
@@ -188,7 +208,7 @@ const AllProducts = () => {
         title={activeCopy.title}
         message={activeCopy.message}
         confirmLabel={activeCopy.confirmLabel}
-        danger={confirmationPopup.action === 'delete'}
+        danger={confirmationPopup.action === 'delete' || confirmationPopup.action === 'unapprove'}
         onConfirm={confirmAction}
         onCancel={closeConfirmation}
       />
