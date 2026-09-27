@@ -122,6 +122,20 @@ const Food = () => {
     }
   };
 
+  const handleUpdateUnapproval = async (id) => {
+    try {
+      await axios.put(`${baseURL}food/${id}/deactivate`);
+
+      setProductFilter((prevProducts) =>
+        prevProducts.map((product) =>
+          (product.id === id ? { ...product, approved: false } : product)
+        )
+      );
+    } catch (error) {
+      console.error('Error updating product approval:', error);
+    }
+  };
+
   const handleSearch = () => {
     if (searchTerm === '') {
       setProductFilter(data);
@@ -171,6 +185,8 @@ const Food = () => {
       confirmDelete();
     } else if (action === 'approve') {
       await handleUpdateApproval(id);
+    } else if (action === 'unapprove') {
+      await handleUpdateUnapproval(id);
     } else if (action === 'boost') {
       await handleUpdateBoost(id);
     } else if (action === 'hot') {
@@ -184,6 +200,7 @@ const Food = () => {
   const confirmCopy = {
     delete: { title: 'Delete this product?', message: 'This removes the listing permanently. This cannot be undone.', confirmLabel: 'Delete', danger: true },
     approve: { title: 'Approve this product?', message: 'The listing will become visible to buyers.', confirmLabel: 'Approve' },
+    unapprove: { title: 'Unapprove this product?', message: 'The listing will be hidden from buyers until it is re-approved.', confirmLabel: 'Unapprove', danger: true },
     boost: { title: 'Boost this product?', message: 'This will feature the listing more prominently.', confirmLabel: 'Boost' },
     hot: { title: 'Mark this product as Hot?', message: 'It will be flagged as a hot item across the site.', confirmLabel: 'Mark Hot' },
     edit: { title: 'Edit this product?', message: 'You will be taken to the edit screen.', confirmLabel: 'Continue' },
@@ -303,7 +320,9 @@ const Food = () => {
 
                 <div className="grid grid-cols-2 gap-2 p-4 pt-0 sm:grid-cols-3">
                   <Button size="sm" variant="danger" onClick={() => handleConfirmation('delete', item.id)}>Delete</Button>
-                  {!item.approved && (
+                  {item.approved ? (
+                    <Button size="sm" variant="secondary" onClick={() => handleConfirmation('unapprove', item.id)}>Unapprove</Button>
+                  ) : (
                     <Button size="sm" variant="primary" onClick={() => handleConfirmation('approve', item.id)}>Approve</Button>
                   )}
                   <Button size="sm" variant="accent" onClick={() => handleConfirmation('boost', item.id)}>Boost</Button>
@@ -321,7 +340,7 @@ const Food = () => {
         title={activeCopy.title}
         message={activeCopy.message}
         confirmLabel={activeCopy.confirmLabel}
-        danger={confirmationPopup.action === 'delete'}
+        danger={confirmationPopup.action === 'delete' || confirmationPopup.action === 'unapprove'}
         onConfirm={confirmAction}
         onCancel={closeConfirmation}
       />

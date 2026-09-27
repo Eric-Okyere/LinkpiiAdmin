@@ -38,6 +38,7 @@ const Fashion = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [hotId, setHotId] = useState(null);
   const [approveId, setApproveId] = useState(null);
+  const [unapproveId, setUnapproveId] = useState(null);
   const [boostId, setBoostId] = useState(null);
 
   const fetchData = async () => {
@@ -75,10 +76,10 @@ const Fashion = () => {
     setProductFilter(data);
   };
 
-  const updateStatus = async (id, endpoint, field) => {
+  const updateStatus = async (id, endpoint, field, value = true) => {
     try {
       await axios.put(`${baseURL}fashionpost/${id}/${endpoint}`);
-      setProductFilter((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: true } : p)));
+      setProductFilter((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
       if (endpoint === 'boost') alert('Product Boosted!');
     } catch (err) {
       console.error(`Error updating ${field}:`, err);
@@ -234,7 +235,11 @@ const Fashion = () => {
                     </button>
                   </div>
 
-                  {!item.approved && (
+                  {item.approved ? (
+                    <Button variant="secondary" size="sm" className="mt-2 w-full" onClick={() => setUnapproveId(item.id)}>
+                      Unapprove Listing
+                    </Button>
+                  ) : (
                     <Button variant="primary" size="sm" className="mt-2 w-full" onClick={() => setApproveId(item.id)}>
                       Approve Listing
                     </Button>
@@ -261,6 +266,18 @@ const Fashion = () => {
           setApproveId(null);
         }}
         onCancel={() => setApproveId(null)}
+      />
+      <ConfirmModal
+        open={!!unapproveId}
+        title="Unapprove this product?"
+        message="The listing will be hidden from buyers until it is re-approved."
+        confirmLabel="Unapprove"
+        danger
+        onConfirm={() => {
+          updateStatus(unapproveId, 'deactivate', 'approved', false);
+          setUnapproveId(null);
+        }}
+        onCancel={() => setUnapproveId(null)}
       />
       <ConfirmModal
         open={!!boostId}

@@ -66,6 +66,20 @@ const Services = () => {
     }
   };
 
+  const handleUpdateUnapproval = async (id) => {
+    try {
+      await axios.put(`${baseURL}services/${id}/deactivate`);
+
+      setProductFilter((prevProducts) =>
+        prevProducts.map((product) =>
+          (product.id === id ? { ...product, approved: false } : product)
+        )
+      );
+    } catch (error) {
+      console.error('Error updating product approval:', error);
+    }
+  };
+
   const handleUpdateBoost = async (id) => {
     try {
       const response = await axios.put(`${baseURL}services/${id}/boost`);
@@ -138,7 +152,9 @@ const Services = () => {
                 <p className="text-xs text-ink-400">Posted: {formatDate(item.dateCreated)}</p>
                 <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <Button size="sm" variant="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
-                  {!item.approved && (
+                  {item.approved ? (
+                    <Button size="sm" variant="secondary" onClick={() => handleUpdateUnapproval(item.id)}>Unapprove</Button>
+                  ) : (
                     <Button size="sm" variant="primary" onClick={() => handleUpdateApproval(item.id)}>Approve</Button>
                   )}
                   <Button size="sm" variant="accent" onClick={() => handleUpdateBoost(item.id)}>Boost</Button>

@@ -98,12 +98,27 @@ const AllMechanics = () => {
           console.error('Error updating product approval:', error);
           closeConfirmation();
         });
+    } else if (action === 'unapprove') {
+      axios.put(`${baseURL}mechanics/${itemId}/deactivate`)
+        .then(() => {
+          setProductFilter((prevProducts) =>
+            prevProducts.map((product) =>
+              (product.id === itemId ? { ...product, approved: false } : product)
+            )
+          );
+          closeConfirmation();
+        })
+        .catch((error) => {
+          console.error('Error updating product approval:', error);
+          closeConfirmation();
+        });
     }
   };
 
   const confirmCopy = {
     delete: { title: 'Delete this mechanic?', message: 'This removes the mechanic listing permanently. This cannot be undone.', confirmLabel: 'Delete', danger: true },
     approve: { title: 'Approve this mechanic?', message: 'This will make the mechanic listing visible to the public.', confirmLabel: 'Approve' },
+    unapprove: { title: 'Unapprove this mechanic?', message: 'The listing will be hidden from the public until it is re-approved.', confirmLabel: 'Unapprove', danger: true },
   };
   const activeCopy = confirmCopy[confirmationPopup.action] || {};
 
@@ -135,7 +150,9 @@ const AllMechanics = () => {
 
               <div className="mt-4 grid grid-cols-1 gap-2">
                 <Button size="sm" variant="danger" onClick={() => handleConfirmation('delete', item.id)}>Delete</Button>
-                {!item.approved && (
+                {item.approved ? (
+                  <Button size="sm" variant="secondary" onClick={() => handleConfirmation('unapprove', item.id)}>Unapprove</Button>
+                ) : (
                   <Button size="sm" variant="primary" onClick={() => handleConfirmation('approve', item.id)}>Approve</Button>
                 )}
               </div>
@@ -149,7 +166,7 @@ const AllMechanics = () => {
         title={activeCopy.title}
         message={activeCopy.message}
         confirmLabel={activeCopy.confirmLabel}
-        danger={confirmationPopup.action === 'delete'}
+        danger={confirmationPopup.action === 'delete' || confirmationPopup.action === 'unapprove'}
         onConfirm={confirmAction}
         onCancel={closeConfirmation}
       />

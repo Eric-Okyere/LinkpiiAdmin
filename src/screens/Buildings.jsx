@@ -109,6 +109,20 @@ const Buildings = () => {
     }
   };
 
+  const handleUpdateUnapproval = async (id) => {
+    try {
+      await axios.put(`${baseURL}buildings/${id}/deactivate`);
+
+      setProductFilter((prevProducts) =>
+        prevProducts.map((product) =>
+          (product.id === id ? { ...product, approved: false } : product)
+        )
+      );
+    } catch (error) {
+      console.error('Error updating product approval:', error);
+    }
+  };
+
   const confirmHot = async () => {
     const { id } = confirmationPopup;
     try {
@@ -192,7 +206,9 @@ const Buildings = () => {
 
               <div className="space-y-2 p-4 pt-0">
                 <Button size="sm" variant="danger" className="w-full" onClick={() => handleConfirmation('delete', item.id)}>Delete</Button>
-                {!item.approved && (
+                {item.approved ? (
+                  <Button size="sm" variant="secondary" className="w-full" onClick={() => handleUpdateUnapproval(item.id)}>Unapprove</Button>
+                ) : (
                   <Button size="sm" variant="primary" className="w-full" onClick={() => handleUpdateApproval(item.id)}>Approve</Button>
                 )}
                 <Button size="sm" variant="accent" className="w-full" onClick={() => handleUpdateBoost(item.id)}>Boost</Button>

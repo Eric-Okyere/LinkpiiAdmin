@@ -114,6 +114,20 @@ const Equipment = () => {
     }
   };
 
+  const handleUpdateUnapproval = async (id) => {
+    try {
+      await axios.put(`${baseURL}rentcar/${id}/deactivate`);
+
+      setProductFilter((prevProducts) =>
+        prevProducts.map((product) =>
+          (product.id === id ? { ...product, approved: false } : product)
+        )
+      );
+    } catch (error) {
+      console.error('Error updating product approval:', error);
+    }
+  };
+
   return (
     <Container>
       <PageHeader title="All Car Rentals" total={productCount} totalLabel="Total Car Rentals" />
@@ -160,7 +174,9 @@ const Equipment = () => {
 
               <div className="mt-4 grid grid-cols-1 gap-2">
                 <Button size="sm" variant="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
-                {!item.approved && (
+                {item.approved ? (
+                  <Button size="sm" variant="secondary" onClick={() => handleUpdateUnapproval(item.id)}>Unapprove</Button>
+                ) : (
                   <Button size="sm" variant="primary" onClick={() => handleUpdateApproval(item.id)}>Approve</Button>
                 )}
                 <Button size="sm" variant="accent" onClick={() => handleUpdateBoost(item.id)}>Boost</Button>
