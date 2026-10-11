@@ -4,6 +4,7 @@ import AdminLayout from './components/AdminLayout';
 import Dashboard from './screens/Dashboard';
 import Login from './components/Login';
 import AllCars from './components/AllCars';
+import KiaBookings from './components/KiaBookings';
 import AllUsers from './components/AllUsers';
 import AllProducts from './components/AllProducts';
 import ApprovedProducts from './screens/ApprovedProducts';
@@ -88,6 +89,7 @@ function App() {
             <Route path="/fashion" element={<Fashion />} />
             <Route path="/approvedfashion" element={<ApprovedFashion />} />
             <Route path="/cars" element={<AllCars />} />
+            <Route path="/kiabookings" element={<KiaBookings />} />
             <Route path="/users" element={<AllUsers />} />
             <Route path="/approvedcars" element={<ApprovedCars />} />
             <Route path="/advert" element={<Advert />} />

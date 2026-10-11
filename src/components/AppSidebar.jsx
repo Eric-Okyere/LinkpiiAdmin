@@ -13,6 +13,7 @@ import {
   FaBuilding,
   FaCarSide,
   FaMotorcycle,
+  FaMapMarkerAlt,
   FaWrench,
   FaBullhorn,
   FaBolt,
@@ -65,6 +66,7 @@ const NAV = [
     icon: FaCarSide,
     items: [
       { label: 'All Drivers', to: '/cars', icon: FaCarSide },
+      { label: 'KIA Bookings', to: '/kiabookings', icon: FaMapMarkerAlt },
       { label: 'Approved Cars', to: '/approvedcars', icon: FaCarSide },
       { label: 'Car Rent', to: '/carrent', icon: FaCarSide },
       { label: 'Okada', to: '/okada', icon: FaMotorcycle },
