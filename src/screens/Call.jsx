@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseURL from '../assets/baseURL';
 import { FcCallTransfer } from "react-icons/fc";
-import { Container, PageHeader, SearchInput, Card, Button, Loader, EmptyState, ConfirmModal } from '../components/ui';
+import { FaMapMarkerAlt } from "react-icons/fa";
+import { Container, PageHeader, SearchInput, Card, Button, Badge, Loader, EmptyState, ConfirmModal } from '../components/ui';
 
 const Call = () => {
     const [data, setData] = useState([]);
@@ -54,6 +55,8 @@ const Call = () => {
 const currentDateTime = new Date().toISOString(); // Get current date and time in ISO format
 const currentTimeFormatted = formatDateTime(currentDateTime); // Format the current date and time
 console.log(currentTimeFormatted);
+
+const mapsUrl = (lat, lng) => `https://www.google.com/maps?q=${lat},${lng}`;
 
   const handleDelete = (id) => {
     setShowConfirmation(true);
@@ -158,10 +161,18 @@ const handleWhatsAppBusi = (receiverphone, item) => {
         <EmptyState title="No call requests found" subtitle="Try a different search term." />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {productFilter.map((item) => (
+          {productFilter.map((item) => {
+            const lat = item.userlocation?.latitude;
+            const lng = item.userlocation?.longitude;
+            const hasExactLocation = typeof lat === 'number' && typeof lng === 'number';
+
+            return (
             <Card hover key={item._id} className="flex flex-col p-5">
-              <div className="mb-2 flex justify-center">
+              <div className="mb-2 flex items-center justify-between">
                 <FcCallTransfer size={34} />
+                <Badge tone={hasExactLocation ? 'success' : 'warning'}>
+                  {hasExactLocation ? 'Exact location shared' : 'No GPS location'}
+                </Badge>
               </div>
               <p className="text-sm text-ink-700">
                 {item.name} with phone number: {item.phone} and mail: {item.email}
@@ -171,6 +182,29 @@ const handleWhatsAppBusi = (receiverphone, item) => {
               </p>
               <p className="mt-2 text-xs text-ink-400">{formatDateTime(item.dateCreated)}</p>
               <p className="text-xs text-ink-400">{item?.pagename}</p>
+
+              <div className="mt-3 rounded-xl border border-dashed border-ink-200 p-3">
+                <p className="text-xs font-bold uppercase tracking-wide text-ink-400">Exact GPS location</p>
+                {hasExactLocation ? (
+                  <>
+                    <p className="mt-0.5 font-mono text-xs text-ink-600">
+                      {lat.toFixed(6)}, {lng.toFixed(6)}
+                    </p>
+                    <a
+                      href={mapsUrl(lat, lng)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:underline"
+                    >
+                      <FaMapMarkerAlt size={12} /> Open in Google Maps
+                    </a>
+                  </>
+                ) : (
+                  <p className="mt-0.5 text-sm text-ink-500">
+                    The caller's device didn't share a GPS pin for this call.
+                  </p>
+                )}
+              </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <Button size="sm" variant="secondary" onClick={() => handleCall(item.phone)}>
@@ -205,7 +239,8 @@ const handleWhatsAppBusi = (receiverphone, item) => {
                 </Button>
               </div>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
 
